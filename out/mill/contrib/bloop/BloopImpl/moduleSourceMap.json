@@ -1,0 +1,14 @@
+{
+    "value": {
+        "npc": [
+            "/home/lh/ysyx/ysyx-workbench/npc/chisel/npc/src",
+            "/home/lh/ysyx/ysyx-workbench/npc/chisel"
+        ],
+        "npc.test": [
+            "/home/lh/ysyx/ysyx-workbench/npc/chisel/npc/test/src",
+            "/home/lh/ysyx/ysyx-workbench/npc/chisel/npc"
+        ]
+    },
+    "valueHash": 1280662849,
+    "inputsHash": 863399842
+}

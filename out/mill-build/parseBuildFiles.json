@@ -1,0 +1,22 @@
+{
+    "value": {
+        "seenScripts": [
+            [
+                "/home/lh/ysyx/ysyx-workbench/npc/chisel/build.sc",
+                "import mill._\nimport mill.scalalib._\nimport mill.scalalib.scalafmt.ScalafmtModule\nimport mill.scalalib.TestModule.Utest\n// support BSP\nimport mill.bsp._\n\nobject npc extends ScalaModule with ScalafmtModule { m =>\n  override def scalaVersion = \"2.13.12\"\n  override def scalacOptions = Seq(\n    \"-language:reflectiveCalls\",\n    \"-deprecation\",\n    \"-feature\",\n    \"-Xcheckinit\"\n  )\n  val chiselVersion = \"6.5.0\"\n  def sources = T.sources {\n    super.sources() ++ Seq(\n      PathRef(os.pwd ),\n    )\n  }\n  override def ivyDeps = Agg(\n    ivy\"org.chipsalliance::chisel:$chiselVersion\"\n  )\n\n  override def scalacPluginIvyDeps = Agg(\n    ivy\"org.chipsalliance:::chisel-plugin:$chiselVersion\"\n  )\n\n  object test extends ScalaTests with TestModule.ScalaTest {\n    override def ivyDeps = m.ivyDeps() ++ Agg(\n      ivy\"org.scalatest::scalatest::3.2.19\"\n    )\n  }\n  def repositoriesTask = T.task {\n      Seq(\n        coursier.MavenRepository(\"http://mirrors.cloud.tencent.com/nexus/repository/maven-public\"),\n        coursier.MavenRepository(\n          \"https://repo.scala-sbt.org/scalasbt/maven-releases\"\n        )\n      ) ++ super.repositoriesTask()\n  }\n}\n"
+            ]
+        ],
+        "repos": [],
+        "ivyDeps": [],
+        "importGraphEdges": [
+            [
+                "/home/lh/ysyx/ysyx-workbench/npc/chisel/build.sc",
+                []
+            ]
+        ],
+        "errors": [],
+        "millImport": false
+    },
+    "valueHash": -1278584700,
+    "inputsHash": 475202250
+}

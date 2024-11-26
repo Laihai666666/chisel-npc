@@ -1,0 +1,11 @@
+{
+    "value": [
+        "-Xplugin:/home/lh/.cache/coursier/v1/http/mirrors.cloud.tencent.com/nexus/repository/maven-public/org/chipsalliance/chisel-plugin_2.13.12/6.5.0/chisel-plugin_2.13.12-6.5.0.jar",
+        "-language:reflectiveCalls",
+        "-deprecation",
+        "-feature",
+        "-Xcheckinit"
+    ],
+    "valueHash": 1314745214,
+    "inputsHash": -1266275739
+}

@@ -1,0 +1,15 @@
+extern_modules.sv
+UART.sv
+Xbar.sv
+Aribiter.sv
+IFU.sv
+IDU.sv
+EXU.sv
+LSU.sv
+Registers.sv
+PCReg.sv
+CSR.sv
+WBU.sv
+Top.sv
+./SRAM.sv
+./Ebreak.sv

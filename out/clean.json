@@ -1,0 +1,10 @@
+{
+    "value": [
+        "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/npc/chisel/out/clean.json",
+        "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/npc/chisel/out/clean.log",
+        "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/npc/chisel/out/mill",
+        "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/npc/chisel/out/npc"
+    ],
+    "valueHash": -1150787827,
+    "inputsHash": -438569756
+}
