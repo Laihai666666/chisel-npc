@@ -1,9 +1,9 @@
 {
     "value": [
-        "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/npc/chisel/npc/compile-resources",
-        "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/npc/chisel/npc/resources",
-        "ref:v0:0c2863ad:/home/lh/ysyx/ysyx-workbench/npc/chisel/out/npc/compile.dest/classes"
+        "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/chisel/npc/compile-resources",
+        "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/chisel/npc/resources",
+        "ref:v0:cdd7b484:/home/lh/ysyx/ysyx-workbench/chisel/out/npc/compile.dest/classes"
     ],
-    "valueHash": -501243340,
-    "inputsHash": -359788109
+    "valueHash": -1991694357,
+    "inputsHash": -1661765195
 }

@@ -18,8 +18,6 @@ class WBU extends Module {
   val registers = Module(new Registers())
   val pcreg     = Module(new PCReg())
   val csrs      = Module(new CSR())
-  val br        = Module(new Ebreak())
-
   val enable = WireDefault(false.B)
   /*val s_idle :: s_writing :: Nil = Enum(2)
   val state                      = RegInit(s_idle)
@@ -72,7 +70,4 @@ class WBU extends Module {
   csrs.io.pc      := pcreg.io.pc
   csrs.io.reg17   := registers.io.reg17
   io.out.csr      := csrs.io.csr
-
-  br.io.ctrlbreak := io.in.bits.ctrlbreak
-
 }

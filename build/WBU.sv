@@ -23,7 +23,6 @@ module WBU(
   input  [11:0] io_in_bits_ctrlcsr,
   input         io_in_bits_ctrlcsrWrite,
                 io_in_bits_ctrlecall,
-                io_in_bits_ctrlbreak,
   input  [4:0]  io_in_bits_rs1,
                 io_in_bits_rs2,
                 io_in_bits_rd,
@@ -73,9 +72,6 @@ module WBU(
     .io_pc           (_pcreg_io_pc),
     .io_reg17        (_registers_io_reg17),
     .io_csr          (_csrs_io_csr)
-  );
-  Ebreak br (
-    .ctrlbreak (io_in_bits_ctrlbreak)
   );
   assign io_out_csr = _csrs_io_csr;
   assign io_pc = _pcreg_io_pc;

@@ -10,7 +10,5 @@
   `endif // PRINTF_COND
 `endif // not def PRINTF_COND_
 
-// external module SRAM
-
 // external module Ebreak
 

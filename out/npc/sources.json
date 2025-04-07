@@ -1,8 +1,8 @@
 {
     "value": [
-        "ref:v0:05545f39:/home/lh/ysyx/ysyx-workbench/npc/chisel/npc/src",
-        "ref:v0:ecf33039:/home/lh/ysyx/ysyx-workbench/npc/chisel"
+        "ref:v0:a57b621f:/home/lh/ysyx/ysyx-workbench/chisel/npc/src",
+        "ref:v0:23f8da2a:/home/lh/ysyx/ysyx-workbench/chisel"
     ],
-    "valueHash": 1532667254,
-    "inputsHash": 1561760195
+    "valueHash": -1912582062,
+    "inputsHash": 784133665
 }

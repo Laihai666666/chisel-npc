@@ -44,6 +44,6 @@ class Registers extends Module {
   }
   io.dataRead1 := regs(io.rs1)
   io.dataRead2 := regs(io.rs2)
-  io.reg17     := regs(17.U)
+  io.reg17     := regs(15.U)
 
 }

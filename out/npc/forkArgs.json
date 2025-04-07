@@ -1,5 +1,9 @@
 {
-    "value": [],
-    "valueHash": 1467096776,
-    "inputsHash": -1697713160
+    "value": [
+        "-Xmx8G",
+        "-Xss128M",
+        "-Dchisel3.firrtlOptions=--target-dir build --infer-rw --repl-seq-mem -X verilog"
+    ],
+    "valueHash": -2077639357,
+    "inputsHash": -433282932
 }

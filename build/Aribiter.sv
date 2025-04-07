@@ -14,25 +14,52 @@ module Aribiter(
   input         clock,
                 reset,
                 io_ifu_ack,
+                io_lsu_ack,
   output        io_axi_ifu_in_arready,
+                io_axi_ifu_in_rvalid,
   output [31:0] io_axi_ifu_in_rdata,
   output [1:0]  io_axi_ifu_in_rresp,
-  input  [31:0] io_axi_ifu_out_araddr,
   input         io_axi_ifu_out_arvalid,
-                io_lsu_ack,
-  output        io_axi_lsu_in_arready,
+  input  [31:0] io_axi_ifu_out_araddr,
+  output        io_axi_lsu_in_awready,
+                io_axi_lsu_in_wready,
+                io_axi_lsu_in_bvalid,
+                io_axi_lsu_in_arready,
+                io_axi_lsu_in_rvalid,
   output [31:0] io_axi_lsu_in_rdata,
-  output [1:0]  io_axi_lsu_in_bresp,
-  input  [31:0] io_axi_lsu_out_araddr,
-  input         io_axi_lsu_out_arvalid,
   input  [31:0] io_axi_lsu_out_awaddr,
   input         io_axi_lsu_out_awvalid,
+  input  [2:0]  io_axi_lsu_out_awsize,
+  input         io_axi_lsu_out_wvalid,
   input  [31:0] io_axi_lsu_out_wdata,
-  input  [7:0]  io_axi_lsu_out_wstrb,
-  input         io_axi_lsu_out_wvalid
+  input  [3:0]  io_axi_lsu_out_wstrb,
+  input         io_axi_lsu_out_wlast,
+                io_axi_lsu_out_arvalid,
+  input  [31:0] io_axi_lsu_out_araddr,
+  input  [2:0]  io_axi_lsu_out_arsize,
+  input         io_axi_soc_in_awready,
+                io_axi_soc_in_wready,
+                io_axi_soc_in_bvalid,
+                io_axi_soc_in_arready,
+                io_axi_soc_in_rvalid,
+  input  [31:0] io_axi_soc_in_rdata,
+  input  [1:0]  io_axi_soc_in_rresp,
+  output [31:0] io_axi_soc_out_awaddr,
+  output        io_axi_soc_out_awvalid,
+  output [2:0]  io_axi_soc_out_awsize,
+  output        io_axi_soc_out_wvalid,
+  output [31:0] io_axi_soc_out_wdata,
+  output [3:0]  io_axi_soc_out_wstrb,
+  output        io_axi_soc_out_wlast,
+                io_axi_soc_out_bready,
+                io_axi_soc_out_arvalid,
+  output [31:0] io_axi_soc_out_araddr,
+  output [2:0]  io_axi_soc_out_arsize,
+  output        io_axi_soc_out_rready
 );
 
   wire        _xbar_io_axi_in_arready;
+  wire        _xbar_io_axi_in_rvalid;
   wire [31:0] _xbar_io_axi_in_rdata;
   reg         state;
   always @(posedge clock) begin
@@ -44,25 +71,53 @@ module Aribiter(
       state <= io_ifu_ack;
   end // always @(posedge)
   Xbar xbar (
-    .clock              (clock),
-    .reset              (reset),
-    .io_axi_in_arready  (_xbar_io_axi_in_arready),
-    .io_axi_in_rdata    (_xbar_io_axi_in_rdata),
-    .io_axi_in_rresp    (io_axi_ifu_in_rresp),
-    .io_axi_in_bresp    (io_axi_lsu_in_bresp),
-    .io_axi_out_araddr  (state ? io_axi_lsu_out_araddr : io_axi_ifu_out_araddr),
-    .io_axi_out_arvalid (state ? state & io_axi_lsu_out_arvalid : io_axi_ifu_out_arvalid),
-    .io_axi_out_rready  (1'h1),
-    .io_axi_out_awaddr  (state ? io_axi_lsu_out_awaddr : 32'h0),
-    .io_axi_out_awvalid (state & io_axi_lsu_out_awvalid),
-    .io_axi_out_wdata   (state ? io_axi_lsu_out_wdata : 32'h0),
-    .io_axi_out_wstrb   (state ? io_axi_lsu_out_wstrb : 8'h0),
-    .io_axi_out_wvalid  (state & io_axi_lsu_out_wvalid),
-    .io_axi_out_bready  (state)
+    .clock                  (clock),
+    .reset                  (reset),
+    .io_axi_in_awready      (io_axi_lsu_in_awready),
+    .io_axi_in_wready       (io_axi_lsu_in_wready),
+    .io_axi_in_bvalid       (io_axi_lsu_in_bvalid),
+    .io_axi_in_arready      (_xbar_io_axi_in_arready),
+    .io_axi_in_rvalid       (_xbar_io_axi_in_rvalid),
+    .io_axi_in_rdata        (_xbar_io_axi_in_rdata),
+    .io_axi_in_rresp        (io_axi_ifu_in_rresp),
+    .io_axi_out_awaddr      (state ? io_axi_lsu_out_awaddr : 32'h0),
+    .io_axi_out_awvalid     (state & io_axi_lsu_out_awvalid),
+    .io_axi_out_awsize      (state ? io_axi_lsu_out_awsize : 3'h0),
+    .io_axi_out_wvalid      (state & io_axi_lsu_out_wvalid),
+    .io_axi_out_wdata       (state ? io_axi_lsu_out_wdata : 32'h0),
+    .io_axi_out_wstrb       (state ? io_axi_lsu_out_wstrb : 4'h0),
+    .io_axi_out_wlast       (state & io_axi_lsu_out_wlast),
+    .io_axi_out_bready      (state),
+    .io_axi_out_arvalid
+      (state ? state & io_axi_lsu_out_arvalid : io_axi_ifu_out_arvalid),
+    .io_axi_out_araddr      (state ? io_axi_lsu_out_araddr : io_axi_ifu_out_araddr),
+    .io_axi_out_arsize      (state ? io_axi_lsu_out_arsize : 3'h2),
+    .io_axi_out_rready      (1'h1),
+    .io_soc_axi_in_awready  (io_axi_soc_in_awready),
+    .io_soc_axi_in_wready   (io_axi_soc_in_wready),
+    .io_soc_axi_in_bvalid   (io_axi_soc_in_bvalid),
+    .io_soc_axi_in_arready  (io_axi_soc_in_arready),
+    .io_soc_axi_in_rvalid   (io_axi_soc_in_rvalid),
+    .io_soc_axi_in_rdata    (io_axi_soc_in_rdata),
+    .io_soc_axi_in_rresp    (io_axi_soc_in_rresp),
+    .io_soc_axi_out_awaddr  (io_axi_soc_out_awaddr),
+    .io_soc_axi_out_awvalid (io_axi_soc_out_awvalid),
+    .io_soc_axi_out_awsize  (io_axi_soc_out_awsize),
+    .io_soc_axi_out_wvalid  (io_axi_soc_out_wvalid),
+    .io_soc_axi_out_wdata   (io_axi_soc_out_wdata),
+    .io_soc_axi_out_wstrb   (io_axi_soc_out_wstrb),
+    .io_soc_axi_out_wlast   (io_axi_soc_out_wlast),
+    .io_soc_axi_out_bready  (io_axi_soc_out_bready),
+    .io_soc_axi_out_arvalid (io_axi_soc_out_arvalid),
+    .io_soc_axi_out_araddr  (io_axi_soc_out_araddr),
+    .io_soc_axi_out_arsize  (io_axi_soc_out_arsize),
+    .io_soc_axi_out_rready  (io_axi_soc_out_rready)
   );
   assign io_axi_ifu_in_arready = _xbar_io_axi_in_arready;
+  assign io_axi_ifu_in_rvalid = _xbar_io_axi_in_rvalid;
   assign io_axi_ifu_in_rdata = _xbar_io_axi_in_rdata;
   assign io_axi_lsu_in_arready = _xbar_io_axi_in_arready;
+  assign io_axi_lsu_in_rvalid = _xbar_io_axi_in_rvalid;
   assign io_axi_lsu_in_rdata = _xbar_io_axi_in_rdata;
 endmodule
 

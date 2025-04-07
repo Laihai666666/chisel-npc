@@ -24,10 +24,9 @@ module LSU(
                 io_in_bits_ctrlBranch,
   input  [11:0] io_in_bits_ctrlcsr,
   input         io_in_bits_ctrlcsrWrite,
-  input  [7:0]  io_in_bits_ctrlLSType,
+  input  [3:0]  io_in_bits_ctrlLSType,
   input         io_in_bits_ctrlSigned,
                 io_in_bits_ctrlecall,
-                io_in_bits_ctrlbreak,
   input  [4:0]  io_in_bits_rs1,
                 io_in_bits_rs2,
                 io_in_bits_rd,
@@ -43,54 +42,78 @@ module LSU(
   output [11:0] io_out_bits_ctrlcsr,
   output        io_out_bits_ctrlcsrWrite,
                 io_out_bits_ctrlecall,
-                io_out_bits_ctrlbreak,
   output [4:0]  io_out_bits_rs1,
                 io_out_bits_rs2,
                 io_out_bits_rd,
   output [31:0] io_out_bits_pc,
-  input         io_axi_in_arready,
+  input         io_axi_in_awready,
+                io_axi_in_wready,
+                io_axi_in_bvalid,
+                io_axi_in_arready,
+                io_axi_in_rvalid,
   input  [31:0] io_axi_in_rdata,
-  input  [1:0]  io_axi_in_bresp,
-  output [31:0] io_axi_out_araddr,
-  output        io_axi_out_arvalid,
   output [31:0] io_axi_out_awaddr,
   output        io_axi_out_awvalid,
+  output [2:0]  io_axi_out_awsize,
+  output        io_axi_out_wvalid,
   output [31:0] io_axi_out_wdata,
-  output [7:0]  io_axi_out_wstrb,
-  output        io_axi_out_wvalid
+  output [3:0]  io_axi_out_wstrb,
+  output        io_axi_out_wlast,
+                io_axi_out_arvalid,
+  output [31:0] io_axi_out_araddr,
+  output [2:0]  io_axi_out_arsize,
+  output        io_perf
 );
 
+  wire        io_out_valid_0;
   reg  [2:0]  state;
-  wire        _GEN = state == 3'h3;
-  wire        _GEN_0 = state == 3'h4;
-  wire [31:0] rdata = _GEN | ~_GEN_0 ? 32'h0 : io_axi_in_rdata;
-  wire        io_out_valid_0 =
-    _GEN | _GEN_0 | state != 3'h2 & state == 3'h5 & io_axi_in_bresp == 2'h0;
-  wire        io_axi_out_wvalid_0 = state == 3'h2;
+  reg  [2:0]  casez_tmp;
+  always_comb begin
+    casez (state)
+      3'b000:
+        casez_tmp =
+          io_in_valid & io_in_bits_ctrlLoad
+            ? 3'h1
+            : io_in_valid & io_in_bits_ctrlStore ? 3'h2 : io_in_valid ? 3'h3 : 3'h0;
+      3'b001:
+        casez_tmp = io_axi_in_arready ? 3'h4 : 3'h1;
+      3'b010:
+        casez_tmp = io_axi_in_awready ? 3'h5 : 3'h2;
+      3'b011:
+        casez_tmp = io_out_valid_0 ? 3'h0 : 3'h3;
+      3'b100:
+        casez_tmp = {~io_out_valid_0, 2'h0};
+      3'b101:
+        casez_tmp = io_axi_in_wready ? 3'h6 : 3'h5;
+      3'b110:
+        casez_tmp = io_out_valid_0 ? 3'h0 : 3'h6;
+      default:
+        casez_tmp = 3'h0;
+    endcase
+  end // always_comb
+  wire [31:0] rdata = io_axi_in_rdata >> {27'h0, io_in_bits_resultAlu[1:0], 3'h0};
+  wire        _io_perf_T = state == 3'h4;
+  assign io_out_valid_0 =
+    state == 3'h3 | _io_perf_T & io_axi_in_rvalid | state == 3'h6 & io_axi_in_bvalid;
+  wire        _io_axi_out_awsize_T_2 = io_in_bits_ctrlLSType == 4'h3;
+  wire [1:0]  _GEN = {1'h0, _io_axi_out_awsize_T_2};
+  wire [6:0]  _io_axi_out_wstrb_T_1 =
+    {3'h0, io_in_bits_ctrlLSType} << io_in_bits_resultAlu[1:0];
+  wire        io_axi_out_wlast_0 = state == 3'h5;
+  wire [94:0] _io_axi_out_wdata_T_2 =
+    {63'h0, io_in_bits_wdata} << {90'h0, io_in_bits_resultAlu[1:0], 3'h0};
   always @(posedge clock) begin
     if (reset)
       state <= 3'h0;
-    else begin
-      automatic logic [7:0][2:0] _GEN_1 =
-        {{3'h0},
-         {3'h0},
-         {io_out_valid_0 ? 3'h0 : 3'h5},
-         {{~io_out_valid_0, 2'h0}},
-         {io_out_valid_0 ? 3'h0 : 3'h3},
-         {io_axi_out_wvalid_0 ? 3'h5 : 3'h2},
-         {io_axi_in_arready ? 3'h4 : 3'h1},
-         {io_in_valid & io_in_bits_ctrlLoad
-            ? 3'h1
-            : io_in_valid & io_in_bits_ctrlStore ? 3'h2 : io_in_valid ? 3'h3 : 3'h0}};
-      state <= _GEN_1[state];
-    end
+    else
+      state <= casez_tmp;
   end // always @(posedge)
   assign io_out_valid = io_out_valid_0;
   assign io_out_bits_resultdata =
     io_in_bits_ctrlLoad
-      ? (io_in_bits_ctrlLSType == 8'hF
+      ? ((&io_in_bits_ctrlLSType)
            ? rdata
-           : io_in_bits_ctrlLSType == 8'h3
+           : _io_axi_out_awsize_T_2
                ? (io_in_bits_ctrlSigned
                     ? {{16{rdata[15]}}, rdata[15:0]}
                     : {16'h0, rdata[15:0]})
@@ -106,17 +129,20 @@ module LSU(
   assign io_out_bits_ctrlcsr = io_in_bits_ctrlcsr;
   assign io_out_bits_ctrlcsrWrite = io_in_bits_ctrlcsrWrite;
   assign io_out_bits_ctrlecall = io_in_bits_ctrlecall;
-  assign io_out_bits_ctrlbreak = io_in_bits_ctrlbreak;
   assign io_out_bits_rs1 = io_in_bits_rs1;
   assign io_out_bits_rs2 = io_in_bits_rs2;
   assign io_out_bits_rd = io_in_bits_rd;
   assign io_out_bits_pc = io_in_bits_pc;
-  assign io_axi_out_araddr = io_in_bits_resultAlu;
-  assign io_axi_out_arvalid = io_in_bits_ctrlLoad;
   assign io_axi_out_awaddr = io_in_bits_resultAlu;
-  assign io_axi_out_awvalid = io_in_bits_ctrlStore;
-  assign io_axi_out_wdata = io_in_bits_wdata;
-  assign io_axi_out_wstrb = io_in_bits_ctrlLSType;
-  assign io_axi_out_wvalid = io_axi_out_wvalid_0;
+  assign io_axi_out_awvalid = state == 3'h2;
+  assign io_axi_out_awsize = {1'h0, (&io_in_bits_ctrlLSType) ? 2'h2 : _GEN};
+  assign io_axi_out_wvalid = io_axi_out_wlast_0;
+  assign io_axi_out_wdata = _io_axi_out_wdata_T_2[31:0];
+  assign io_axi_out_wstrb = _io_axi_out_wstrb_T_1[3:0];
+  assign io_axi_out_wlast = io_axi_out_wlast_0;
+  assign io_axi_out_arvalid = state == 3'h1;
+  assign io_axi_out_araddr = io_in_bits_resultAlu;
+  assign io_axi_out_arsize = {1'h0, (&io_in_bits_ctrlLSType) ? 2'h2 : _GEN};
+  assign io_perf = _io_perf_T & io_axi_in_rvalid;
 endmodule
 

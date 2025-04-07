@@ -4,8 +4,9 @@ import "DPI-C" function void ebreak();
 module Ebreak(
       input ctrlbreak);  
 always @(*) begin
- if (ctrlbreak)
+ if (ctrlbreak)begin
    ebreak();
+ end
 end
 endmodule
   

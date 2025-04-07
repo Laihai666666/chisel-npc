@@ -1,7 +1,7 @@
 {
     "value": [
-        "ref:v0:7d06f912:/home/lh/ysyx/ysyx-workbench/npc/chisel/out/mill-build/generateScriptSources.dest/millbuild/build.sc"
+        "ref:v0:935397ed:/home/lh/ysyx/ysyx-workbench/chisel/out/mill-build/generateScriptSources.dest/millbuild/build.sc"
     ],
-    "valueHash": -825159509,
-    "inputsHash": -1944111605
+    "valueHash": 585436606,
+    "inputsHash": 90811135
 }

@@ -20,18 +20,19 @@ module IFU(
   output [31:0] io_out_bits_inst,
                 io_out_bits_pc,
   input         io_axi_in_arready,
+                io_axi_in_rvalid,
   input  [31:0] io_axi_in_rdata,
   input  [1:0]  io_axi_in_rresp,
+  output        io_axi_out_arvalid,
   output [31:0] io_axi_out_araddr,
-  output        io_axi_out_arvalid
+  output        io_perf
 );
 
   reg  [1:0]  state;
   reg  [31:0] inst;
   reg         read_i;
-  wire        _GEN = state == 2'h2;
-  wire        io_out_valid_0 = _GEN & io_axi_in_rresp == 2'h0;
-  wire        io_axi_out_arvalid_0 = read_i | state == 2'h1;
+  wire        _io_out_valid_T = state == 2'h2;
+  wire        io_perf_0 = _io_out_valid_T & io_axi_in_rvalid & io_axi_in_rresp == 2'h0;
   always @(posedge clock) begin
     if (reset) begin
       state <= 2'h0;
@@ -40,21 +41,22 @@ module IFU(
     end
     else begin
       if (state == 2'h2)
-        state <= {~io_out_valid_0, 1'h0};
+        state <= {~io_perf_0, 1'h0};
       else if (state == 2'h1)
         state <= io_axi_in_arready ? 2'h2 : 2'h1;
       else
-        state <= {1'h0, state == 2'h0 & io_axi_out_arvalid_0};
-      if (_GEN)
+        state <= {1'h0, state == 2'h0 & read_i};
+      if (_io_out_valid_T & io_axi_in_rvalid)
         inst <= io_axi_in_rdata;
       read_i <= io_ifu_req;
     end
   end // always @(posedge)
-  assign io_ifu_ack = io_out_valid_0;
-  assign io_out_valid = io_out_valid_0;
+  assign io_ifu_ack = io_perf_0;
+  assign io_out_valid = io_perf_0;
   assign io_out_bits_inst = inst;
   assign io_out_bits_pc = io_pc;
+  assign io_axi_out_arvalid = state == 2'h1;
   assign io_axi_out_araddr = io_pc;
-  assign io_axi_out_arvalid = io_axi_out_arvalid_0;
+  assign io_perf = io_perf_0;
 endmodule
 

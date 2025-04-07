@@ -13,75 +13,75 @@
 module Xbar(
   input         clock,
                 reset,
-  output        io_axi_in_arready,
+  output        io_axi_in_awready,
+                io_axi_in_wready,
+                io_axi_in_bvalid,
+                io_axi_in_arready,
+                io_axi_in_rvalid,
   output [31:0] io_axi_in_rdata,
   output [1:0]  io_axi_in_rresp,
-                io_axi_in_bresp,
-  input  [31:0] io_axi_out_araddr,
-  input         io_axi_out_arvalid,
-                io_axi_out_rready,
   input  [31:0] io_axi_out_awaddr,
   input         io_axi_out_awvalid,
-  input  [31:0] io_axi_out_wdata,
-  input  [7:0]  io_axi_out_wstrb,
+  input  [2:0]  io_axi_out_awsize,
   input         io_axi_out_wvalid,
-                io_axi_out_bready
+  input  [31:0] io_axi_out_wdata,
+  input  [3:0]  io_axi_out_wstrb,
+  input         io_axi_out_wlast,
+                io_axi_out_bready,
+                io_axi_out_arvalid,
+  input  [31:0] io_axi_out_araddr,
+  input  [2:0]  io_axi_out_arsize,
+  input         io_axi_out_rready,
+                io_soc_axi_in_awready,
+                io_soc_axi_in_wready,
+                io_soc_axi_in_bvalid,
+                io_soc_axi_in_arready,
+                io_soc_axi_in_rvalid,
+  input  [31:0] io_soc_axi_in_rdata,
+  input  [1:0]  io_soc_axi_in_rresp,
+  output [31:0] io_soc_axi_out_awaddr,
+  output        io_soc_axi_out_awvalid,
+  output [2:0]  io_soc_axi_out_awsize,
+  output        io_soc_axi_out_wvalid,
+  output [31:0] io_soc_axi_out_wdata,
+  output [3:0]  io_soc_axi_out_wstrb,
+  output        io_soc_axi_out_wlast,
+                io_soc_axi_out_bready,
+                io_soc_axi_out_arvalid,
+  output [31:0] io_soc_axi_out_araddr,
+  output [2:0]  io_soc_axi_out_arsize,
+  output        io_soc_axi_out_rready
 );
 
-  wire [31:0] _uart_io_axi_in_rdata;
-  wire        _sram_axi_in_arready;
-  wire [31:0] _sram_axi_in_rdata;
-  wire [1:0]  _sram_axi_in_rresp;
-  wire [1:0]  _sram_axi_in_bresp;
-  wire        _GEN =
-    io_axi_out_arvalid & io_axi_out_araddr[31] & io_axi_out_araddr < 32'h90000000
-    | io_axi_out_awvalid & io_axi_out_awaddr[31] & io_axi_out_awaddr < 32'h90000000;
-  wire        _GEN_0 =
-    io_axi_out_arvalid & io_axi_out_araddr > 32'h9FFFFFFF
-    & io_axi_out_araddr < 32'hA0001000 | io_axi_out_awvalid
-    & io_axi_out_awaddr > 32'h9FFFFFFF & io_axi_out_awaddr < 32'hA0001000;
-  wire        _GEN_1 = ~io_axi_out_arvalid & ~io_axi_out_awvalid;
-  wire        _GEN_2 = _GEN | ~_GEN_0;
-  SRAM sram (
-    .clk             (clock),
-    .reset           (reset),
-    .axi_in_arready  (_sram_axi_in_arready),
-    .axi_in_rdata    (_sram_axi_in_rdata),
-    .axi_in_rresp    (_sram_axi_in_rresp),
-    .axi_in_rvalid   (/* unused */),
-    .axi_in_awready  (/* unused */),
-    .axi_in_wready   (/* unused */),
-    .axi_in_bresp    (_sram_axi_in_bresp),
-    .axi_in_bvalid   (/* unused */),
-    .axi_out_araddr  (_GEN ? io_axi_out_araddr : 32'h0),
-    .axi_out_arvalid (_GEN & io_axi_out_arvalid),
-    .axi_out_rready  (_GEN & io_axi_out_rready),
-    .axi_out_awaddr  (_GEN ? io_axi_out_awaddr : 32'h0),
-    .axi_out_awvalid (_GEN & io_axi_out_awvalid),
-    .axi_out_wdata   (_GEN ? io_axi_out_wdata : 32'h0),
-    .axi_out_wstrb   (_GEN ? io_axi_out_wstrb : 8'h0),
-    .axi_out_wvalid  (_GEN & io_axi_out_wvalid),
-    .axi_out_bready  (_GEN & io_axi_out_bready)
-  );
-  UART uart (
+  wire        _clint_io_axi_in_rvalid;
+  wire [31:0] _clint_io_axi_in_rdata;
+  wire        _GEN = (|(io_axi_out_araddr[31:25])) & io_axi_out_araddr < 32'h2010000;
+  CLINT clint (
     .clock              (clock),
     .reset              (reset),
-    .io_axi_in_rdata    (_uart_io_axi_in_rdata),
-    .io_axi_out_araddr  (_GEN_2 ? 32'h0 : io_axi_out_araddr),
-    .io_axi_out_arvalid (~_GEN & _GEN_0 & io_axi_out_arvalid),
-    .io_axi_out_awaddr  (_GEN_2 ? 32'h0 : io_axi_out_awaddr),
-    .io_axi_out_awvalid (~_GEN & _GEN_0 & io_axi_out_awvalid),
-    .io_axi_out_wdata   (_GEN_2 ? 32'h0 : io_axi_out_wdata),
-    .io_axi_out_wvalid  (~_GEN & _GEN_0 & io_axi_out_wvalid)
+    .io_axi_in_rvalid   (_clint_io_axi_in_rvalid),
+    .io_axi_in_rdata    (_clint_io_axi_in_rdata),
+    .io_axi_out_arvalid (_GEN & io_axi_out_arvalid),
+    .io_axi_out_araddr  (_GEN ? io_axi_out_araddr : 32'h0)
   );
-  assign io_axi_in_arready =
-    _GEN ? _sram_axi_in_arready : _GEN_0 | _GEN_1 & _sram_axi_in_arready;
-  assign io_axi_in_rdata =
-    _GEN
-      ? _sram_axi_in_rdata
-      : _GEN_0 ? _uart_io_axi_in_rdata : _GEN_1 ? _sram_axi_in_rdata : 32'h0;
-  assign io_axi_in_rresp =
-    _GEN ? _sram_axi_in_rresp : _GEN_0 ? 2'h0 : _GEN_1 ? _sram_axi_in_rresp : 2'h1;
-  assign io_axi_in_bresp = _GEN | ~(_GEN_0 | ~_GEN_1) ? _sram_axi_in_bresp : 2'h0;
+  assign io_axi_in_awready = ~_GEN & io_soc_axi_in_awready;
+  assign io_axi_in_wready = ~_GEN & io_soc_axi_in_wready;
+  assign io_axi_in_bvalid = ~_GEN & io_soc_axi_in_bvalid;
+  assign io_axi_in_arready = _GEN | io_soc_axi_in_arready;
+  assign io_axi_in_rvalid = _GEN ? _clint_io_axi_in_rvalid : io_soc_axi_in_rvalid;
+  assign io_axi_in_rdata = _GEN ? _clint_io_axi_in_rdata : io_soc_axi_in_rdata;
+  assign io_axi_in_rresp = _GEN ? 2'h0 : io_soc_axi_in_rresp;
+  assign io_soc_axi_out_awaddr = _GEN ? 32'h0 : io_axi_out_awaddr;
+  assign io_soc_axi_out_awvalid = ~_GEN & io_axi_out_awvalid;
+  assign io_soc_axi_out_awsize = _GEN ? 3'h0 : io_axi_out_awsize;
+  assign io_soc_axi_out_wvalid = ~_GEN & io_axi_out_wvalid;
+  assign io_soc_axi_out_wdata = _GEN ? 32'h0 : io_axi_out_wdata;
+  assign io_soc_axi_out_wstrb = _GEN ? 4'h0 : io_axi_out_wstrb;
+  assign io_soc_axi_out_wlast = ~_GEN & io_axi_out_wlast;
+  assign io_soc_axi_out_bready = ~_GEN & io_axi_out_bready;
+  assign io_soc_axi_out_arvalid = ~_GEN & io_axi_out_arvalid;
+  assign io_soc_axi_out_araddr = _GEN ? 32'h0 : io_axi_out_araddr;
+  assign io_soc_axi_out_arsize = _GEN ? 3'h0 : io_axi_out_arsize;
+  assign io_soc_axi_out_rready = ~_GEN & io_axi_out_rready;
 endmodule
 

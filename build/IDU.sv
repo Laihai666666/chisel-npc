@@ -21,7 +21,7 @@ module IDU(
                 io_out_bits_ctrlRegWrite,
                 io_out_bits_ctrlLoad,
                 io_out_bits_ctrlStore,
-  output [7:0]  io_out_bits_ctrlLSType,
+  output [3:0]  io_out_bits_ctrlLSType,
   output        io_out_bits_ctrlALUSrc,
                 io_out_bits_ctrlJAL,
                 io_out_bits_ctrlBranch,
@@ -37,56 +37,92 @@ module IDU(
   output        io_out_bits_ctrlcsrWrite,
                 io_out_bits_ctrlecall,
                 io_out_bits_ctrloneop,
-  output [31:0] io_out_bits_pc
+  output [31:0] io_out_bits_pc,
+  output        io_perf_alu,
+                io_perf_mem,
+                io_perf_csr
 );
 
-  reg             state;
-  wire            _GEN = io_in_bits_inst[6:2] == 5'hD;
-  wire            _GEN_0 = io_in_bits_inst[6:2] == 5'h5;
-  wire            _GEN_1 = io_in_bits_inst[6:2] == 5'h1B;
-  wire            _GEN_2 = io_in_bits_inst[6:2] == 5'h19;
-  wire            _GEN_3 = io_in_bits_inst[6:2] == 5'h0;
-  wire            _GEN_4 = io_in_bits_inst[6:2] == 5'h4;
-  wire            _GEN_5 = _GEN_2 | _GEN_3;
-  wire            _GEN_6 = _GEN_5 | _GEN_4;
-  wire            _GEN_7 = _GEN | _GEN_0 | _GEN_1;
-  wire            _GEN_8 = io_in_bits_inst[14:12] == 3'h0;
-  wire            _GEN_9 = io_in_bits_inst[14:12] == 3'h4;
-  wire            _GEN_10 = io_in_bits_inst[14:12] == 3'h1;
-  wire            _GEN_11 = io_in_bits_inst[14:12] == 3'h5;
-  wire            _GEN_12 = io_in_bits_inst[14:12] == 3'h2;
-  wire            _GEN_13 = io_in_bits_inst[14:12] == 3'h6;
-  wire            _GEN_14 = _GEN_10 | _GEN_11;
-  wire            _GEN_15 = _GEN_4 & _GEN_14;
-  wire [3:0]      _GEN_16 = {io_in_bits_inst[30], io_in_bits_inst[14:12]};
-  wire            _GEN_17 = io_in_bits_inst[14:12] == 3'h3;
-  wire [3:0]      _GEN_18 = _GEN_13 ? 4'h5 : {1'h0, &(io_in_bits_inst[14:12]), 2'h0};
-  wire            _GEN_19 = io_in_bits_inst[6:2] == 5'h18;
-  wire            _GEN_20 = _GEN | _GEN_0 | _GEN_1 | _GEN_6;
-  wire [3:0]      _GEN_21 = {4{&(io_in_bits_inst[14:12])}};
-  wire [7:0][3:0] _GEN_22 =
-    {{_GEN_21}, {4'hE}, {4'hF}, {4'hE}, {_GEN_21}, {_GEN_21}, {4'hD}, {4'hC}};
-  wire            _GEN_23 = io_in_bits_inst[6:2] == 5'h8;
-  wire            _GEN_24 = _GEN | _GEN_0;
-  wire            _GEN_25 = io_in_bits_inst[6:2] == 5'hC;
-  wire            _GEN_26 = _GEN_10 | _GEN_12;
-  wire [7:0][3:0] _GEN_27 =
-    {{_GEN_18},
-     {_GEN_18},
-     {{2'h2, io_in_bits_inst[30], 1'h1}},
-     {4'h7},
-     {4'hE},
-     {4'hE},
-     {4'h8},
-     {io_in_bits_inst[30] ? 4'h2 : 4'h1}};
-  wire            _GEN_28 = io_in_bits_inst[6:2] == 5'h1C;
-  wire            _GEN_29 = _GEN_10 | _GEN_12;
-  wire            _GEN_30 = _GEN_19 | _GEN_23 | _GEN_25;
-  wire            _GEN_31 = _GEN | _GEN_0 | _GEN_1 | _GEN_6 | _GEN_30;
-  wire            _GEN_32 = io_in_bits_inst[21:20] == 2'h0;
-  wire            _GEN_33 = io_in_bits_inst[21:20] == 2'h2;
-  wire            _GEN_34 = _GEN_8 & (_GEN_32 | _GEN_33);
-  wire            _GEN_35 = _GEN_32 | _GEN_33;
+  wire       ctrlbreak;
+  reg        state;
+  wire       _GEN = io_in_bits_inst[6:2] == 5'hD;
+  wire       _GEN_0 = io_in_bits_inst[6:2] == 5'h5;
+  wire       _GEN_1 = io_in_bits_inst[6:2] == 5'h1B;
+  wire       _GEN_2 = io_in_bits_inst[6:2] == 5'h19;
+  wire       _GEN_3 = io_in_bits_inst[6:2] == 5'h4;
+  wire       _GEN_4 = _GEN_2 | ~(|(io_in_bits_inst[6:2]));
+  wire       _GEN_5 = _GEN_4 | _GEN_3;
+  wire       _GEN_6 = _GEN | _GEN_0 | _GEN_1;
+  wire       _GEN_7 = io_in_bits_inst[14:12] == 3'h0;
+  wire       _GEN_8 = io_in_bits_inst[14:12] == 3'h4;
+  wire       _GEN_9 = io_in_bits_inst[14:12] == 3'h1;
+  wire       _GEN_10 = io_in_bits_inst[14:12] == 3'h5;
+  wire       _GEN_11 = io_in_bits_inst[14:12] == 3'h2;
+  wire       _GEN_12 = io_in_bits_inst[14:12] == 3'h6;
+  wire       _GEN_13 = _GEN_9 | _GEN_10;
+  wire       _GEN_14 = _GEN_3 & _GEN_13;
+  wire [3:0] _GEN_15 = {io_in_bits_inst[30], io_in_bits_inst[14:12]};
+  wire       _GEN_16 = io_in_bits_inst[14:12] == 3'h3;
+  wire [3:0] _GEN_17 = _GEN_12 ? 4'h5 : {1'h0, &(io_in_bits_inst[14:12]), 2'h0};
+  wire       _GEN_18 = io_in_bits_inst[6:2] == 5'h18;
+  wire       _GEN_19 = _GEN | _GEN_0 | _GEN_1 | _GEN_5;
+  reg  [3:0] casez_tmp;
+  wire [3:0] _GEN_20 = {4{&(io_in_bits_inst[14:12])}};
+  always_comb begin
+    casez (io_in_bits_inst[14:12])
+      3'b000:
+        casez_tmp = 4'hC;
+      3'b001:
+        casez_tmp = 4'hD;
+      3'b010:
+        casez_tmp = _GEN_20;
+      3'b011:
+        casez_tmp = _GEN_20;
+      3'b100:
+        casez_tmp = 4'hE;
+      3'b101:
+        casez_tmp = 4'hF;
+      3'b110:
+        casez_tmp = 4'hE;
+      default:
+        casez_tmp = _GEN_20;
+    endcase
+  end // always_comb
+  wire       _GEN_21 = io_in_bits_inst[6:2] == 5'h8;
+  wire       _GEN_22 = _GEN | _GEN_0;
+  wire       _GEN_23 = io_in_bits_inst[6:2] == 5'hC;
+  wire       _GEN_24 = _GEN_9 | _GEN_11;
+  reg  [3:0] casez_tmp_0;
+  always_comb begin
+    casez (io_in_bits_inst[14:12])
+      3'b000:
+        casez_tmp_0 = io_in_bits_inst[30] ? 4'h2 : 4'h1;
+      3'b001:
+        casez_tmp_0 = 4'h8;
+      3'b010:
+        casez_tmp_0 = 4'hE;
+      3'b011:
+        casez_tmp_0 = 4'hE;
+      3'b100:
+        casez_tmp_0 = 4'h7;
+      3'b101:
+        casez_tmp_0 = {2'h2, io_in_bits_inst[30], 1'h1};
+      3'b110:
+        casez_tmp_0 = _GEN_17;
+      default:
+        casez_tmp_0 = _GEN_17;
+    endcase
+  end // always_comb
+  wire       _GEN_25 = io_in_bits_inst[6:2] == 5'h1C;
+  wire       _GEN_26 = _GEN_9 | _GEN_11;
+  wire       _GEN_27 = _GEN_18 | _GEN_21 | _GEN_23;
+  wire       _GEN_28 = _GEN | _GEN_0 | _GEN_1 | _GEN_5 | _GEN_27;
+  wire       _GEN_29 = io_in_bits_inst[21:20] == 2'h0;
+  wire       _GEN_30 = io_in_bits_inst[21:20] == 2'h2;
+  wire       _GEN_31 = _GEN_7 & (_GEN_29 | _GEN_30);
+  wire       _GEN_32 = _GEN_29 | _GEN_30;
+  assign ctrlbreak =
+    ~_GEN_28 & _GEN_25 & ~_GEN_24 & _GEN_7 & ~_GEN_32 & io_in_bits_inst[21:20] == 2'h1;
   always @(posedge clock) begin
     if (reset)
       state <= 1'h0;
@@ -97,62 +133,60 @@ module IDU(
   end // always @(posedge)
   assign io_out_valid = state;
   assign io_out_bits_ctrlJump =
-    ~_GEN_24 & (_GEN_1 | (_GEN_6 ? _GEN_2 : ~_GEN_30 & _GEN_28 & ~_GEN_26 & _GEN_34));
+    ~_GEN_22 & (_GEN_1 | (_GEN_5 ? _GEN_2 : ~_GEN_27 & _GEN_25 & ~_GEN_24 & _GEN_31));
   assign io_out_bits_ctrlRegWrite =
-    _GEN_20 | ~(_GEN_19 | _GEN_23)
-    & (_GEN_25 | ~_GEN_28 | _GEN_26 | ~_GEN_8 | ~_GEN_32 & ~_GEN_33);
-  assign io_out_bits_ctrlLoad = ~_GEN_7 & _GEN_6 & ~_GEN_2 & _GEN_3;
-  assign io_out_bits_ctrlStore = ~(_GEN | _GEN_0 | _GEN_1 | _GEN_6 | _GEN_19) & _GEN_23;
+    _GEN_19 | ~(_GEN_18 | _GEN_21)
+    & (_GEN_23 | ~_GEN_25 | _GEN_24 | ~_GEN_7 | ~_GEN_29 & ~_GEN_30);
+  assign io_out_bits_ctrlLoad = ~_GEN_6 & _GEN_5 & ~_GEN_2 & ~(|(io_in_bits_inst[6:2]));
+  assign io_out_bits_ctrlStore = ~(_GEN | _GEN_0 | _GEN_1 | _GEN_5 | _GEN_18) & _GEN_21;
   assign io_out_bits_ctrlLSType =
-    {4'h0,
-     _GEN_7
-       ? 4'h0
-       : _GEN_6
-           ? (_GEN_2 | ~_GEN_3
-                ? 4'h0
-                : _GEN_8 | _GEN_9 ? 4'h1 : _GEN_14 ? 4'h3 : {4{_GEN_12 | _GEN_13}})
-           : _GEN_19 | ~_GEN_23 ? 4'h0 : _GEN_8 ? 4'h1 : _GEN_10 ? 4'h3 : {4{_GEN_12}}};
-  assign io_out_bits_ctrlALUSrc = _GEN_20 | ~_GEN_19 & _GEN_23;
+    _GEN_6
+      ? 4'h0
+      : _GEN_5
+          ? (_GEN_2 | (|(io_in_bits_inst[6:2]))
+               ? 4'h0
+               : _GEN_7 | _GEN_8 ? 4'h1 : _GEN_13 ? 4'h3 : {4{_GEN_11 | _GEN_12}})
+          : _GEN_18 | ~_GEN_21 ? 4'h0 : _GEN_7 ? 4'h1 : _GEN_9 ? 4'h3 : {4{_GEN_11}};
+  assign io_out_bits_ctrlALUSrc = _GEN_19 | ~_GEN_18 & _GEN_21;
   assign io_out_bits_ctrlJAL = ~_GEN & (_GEN_0 | _GEN_1);
-  assign io_out_bits_ctrlBranch = ~_GEN_20 & _GEN_19;
+  assign io_out_bits_ctrlBranch = ~_GEN_19 & _GEN_18;
   assign io_out_bits_ctrlOP =
-    _GEN_7
+    _GEN_6
       ? 4'h1
-      : _GEN_6
-          ? (_GEN_5
+      : _GEN_5
+          ? (_GEN_4
                ? 4'h1
-               : _GEN_15
-                   ? (_GEN_16 == 4'h1
+               : _GEN_14
+                   ? (_GEN_15 == 4'h1
                         ? 4'h8
-                        : _GEN_16 == 4'h5 ? 4'h9 : _GEN_16 == 4'hD ? 4'hB : 4'h0)
-                   : _GEN_8 ? 4'h1 : _GEN_12 | _GEN_17 ? 4'hE : _GEN_9 ? 4'h7 : _GEN_18)
-          : _GEN_19
-              ? _GEN_22[io_in_bits_inst[14:12]]
-              : _GEN_23
+                        : _GEN_15 == 4'h5 ? 4'h9 : _GEN_15 == 4'hD ? 4'hB : 4'h0)
+                   : _GEN_7 ? 4'h1 : _GEN_11 | _GEN_16 ? 4'hE : _GEN_8 ? 4'h7 : _GEN_17)
+          : _GEN_18
+              ? casez_tmp
+              : _GEN_21
                   ? 4'h1
-                  : _GEN_25
-                      ? _GEN_27[io_in_bits_inst[14:12]]
-                      : ~_GEN_28 | _GEN_10
+                  : _GEN_23
+                      ? casez_tmp_0
+                      : ~_GEN_25 | _GEN_9
                           ? 4'h0
-                          : _GEN_12 ? 4'h5 : {3'h0, _GEN_8 & _GEN_35};
+                          : _GEN_11 ? 4'h5 : {3'h0, _GEN_7 & _GEN_32};
   assign io_out_bits_ctrlSigned =
-    _GEN_7
-    | (_GEN_6
+    _GEN_6
+    | (_GEN_5
          ? _GEN_2
-           | (_GEN_3
-                ? _GEN_8 | ~_GEN_9 & (_GEN_10 | ~_GEN_11 & (_GEN_12 | ~_GEN_13))
-                : _GEN_15 | _GEN_8 | _GEN_12 | ~_GEN_17)
-         : _GEN_19
-             ? _GEN_8 | _GEN_10 | _GEN_9 | _GEN_11 | ~_GEN_13
+           | ((|(io_in_bits_inst[6:2]))
+                ? _GEN_14 | _GEN_7 | _GEN_11 | ~_GEN_16
+                : _GEN_7 | ~_GEN_8 & (_GEN_9 | ~_GEN_10 & (_GEN_11 | ~_GEN_12)))
+         : _GEN_18
+             ? _GEN_7 | _GEN_9 | _GEN_8 | _GEN_10 | ~_GEN_12
                & ~(&(io_in_bits_inst[14:12]))
-             : _GEN_23 | ~_GEN_25 | _GEN_8 | _GEN_26 | ~_GEN_17);
-  assign io_out_bits_ctrlbreak =
-    ~_GEN_31 & _GEN_28 & ~_GEN_26 & _GEN_8 & ~_GEN_35 & io_in_bits_inst[21:20] == 2'h1;
+             : _GEN_21 | ~_GEN_23 | _GEN_7 | _GEN_24 | ~_GEN_16);
+  assign io_out_bits_ctrlbreak = ctrlbreak;
   assign io_out_bits_rs1 = io_in_bits_inst[19:15];
   assign io_out_bits_rs2 = io_in_bits_inst[24:20];
   assign io_out_bits_rd = io_in_bits_inst[11:7];
   assign io_out_bits_imm =
-    _GEN_24
+    _GEN_22
       ? {io_in_bits_inst[31:12], 12'h0}
       : _GEN_1
           ? {{12{io_in_bits_inst[31]}},
@@ -160,31 +194,40 @@ module IDU(
              io_in_bits_inst[20],
              io_in_bits_inst[30:21],
              1'h0}
-          : _GEN_6
-              ? (_GEN_5 | ~_GEN_15
+          : _GEN_5
+              ? (_GEN_4 | ~_GEN_14
                    ? {{20{io_in_bits_inst[31]}}, io_in_bits_inst[31:20]}
                    : {27'h0, io_in_bits_inst[24:20]})
-              : _GEN_19
+              : _GEN_18
                   ? {{20{io_in_bits_inst[31]}},
                      io_in_bits_inst[7],
                      io_in_bits_inst[30:25],
                      io_in_bits_inst[11:8],
                      1'h0}
-                  : _GEN_23
+                  : _GEN_21
                       ? {{20{io_in_bits_inst[31]}},
                          io_in_bits_inst[31:25],
                          io_in_bits_inst[11:7]}
                       : 32'h0;
-  assign io_out_bits_ctrlcs = ~_GEN_31 & _GEN_28 & (_GEN_26 | _GEN_34);
+  assign io_out_bits_ctrlcs = ~_GEN_28 & _GEN_25 & (_GEN_24 | _GEN_31);
   assign io_out_bits_ctrlcsr =
-    _GEN_31 | ~_GEN_28
+    _GEN_28 | ~_GEN_25
       ? 12'h0
-      : _GEN_29
+      : _GEN_26
           ? io_in_bits_inst[31:20]
-          : _GEN_8 ? (_GEN_32 ? 12'h305 : _GEN_33 ? 12'h341 : 12'h0) : 12'h0;
-  assign io_out_bits_ctrlcsrWrite = ~_GEN_31 & _GEN_28 & _GEN_29;
-  assign io_out_bits_ctrlecall = ~_GEN_31 & _GEN_28 & ~_GEN_26 & _GEN_8 & _GEN_32;
+          : _GEN_7 ? (_GEN_29 ? 12'h305 : _GEN_30 ? 12'h341 : 12'h0) : 12'h0;
+  assign io_out_bits_ctrlcsrWrite = ~_GEN_28 & _GEN_25 & _GEN_26;
+  assign io_out_bits_ctrlecall = ~_GEN_28 & _GEN_25 & ~_GEN_24 & _GEN_7 & _GEN_29;
   assign io_out_bits_ctrloneop = _GEN | _GEN_0;
   assign io_out_bits_pc = io_in_bits_pc;
+  assign io_perf_alu =
+    state
+    & (io_in_bits_inst[6:2] == 5'hC | io_in_bits_inst[6:2] == 5'h4
+       | io_in_bits_inst[6:2] == 5'h5 | io_in_bits_inst[6:2] == 5'hD
+       | io_in_bits_inst[6:2] == 5'h1B | io_in_bits_inst[6:2] == 5'h19
+       | io_in_bits_inst[6:2] == 5'h18);
+  assign io_perf_mem =
+    state & (~(|(io_in_bits_inst[6:2])) | io_in_bits_inst[6:2] == 5'h8);
+  assign io_perf_csr = state & io_in_bits_inst[6:2] == 5'h1C & ~ctrlbreak;
 endmodule
 

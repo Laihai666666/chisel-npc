@@ -22,7 +22,8 @@ class CSR extends Module {
   val mepc    = RegInit(UInt(ADDR_WIDTH.W), 0.U)
   val mstatus = RegInit(UInt(ADDR_WIDTH.W), 0x1800.U)
   val mtvec   = RegInit(UInt(ADDR_WIDTH.W), 0.U)
-
+  val mvendorid =RegInit(UInt(ADDR_WIDTH.W), 0x79737978.U)
+  val marchid =RegInit(UInt(ADDR_WIDTH.W), 0x23060351.U)
   when(io.ctrlcsr === "h341".U) {
     io.csr := mepc
   }.elsewhen(io.ctrlcsr === "h342".U) {
@@ -31,22 +32,16 @@ class CSR extends Module {
     io.csr := mstatus
   }.elsewhen(io.ctrlcsr === "h305".U) {
     io.csr := mtvec
+  }.elsewhen(io.ctrlcsr === "h400".U) {
+    io.csr := mvendorid
+  }.elsewhen(io.ctrlcsr === "h401".U) {
+    io.csr := marchid
   }.otherwise {
     io.csr := 0.U
   }
-  when(io.ctrlcsrWrite) {
-    when(io.ctrlcsr === "h341".U) {
-      mepc := io.data
-    }.elsewhen(io.ctrlcsr === "h342".U) {
-      mcause := io.data
-    }.elsewhen(io.ctrlcsr === "h300".U) {
-      mstatus := io.data
-    }.elsewhen(io.ctrlcsr === "h305".U) {
-      mtvec := io.data
-    }
-  }
-  when(io.ctrlecall) {
-    mepc   := io.pc
-    mcause := io.reg17
-  }
+  mepc:=Mux(io.ctrlecall,io.pc,Mux(io.ctrlcsrWrite&(io.ctrlcsr === "h341".U),io.data,mepc))
+  mcause:=Mux(io.ctrlecall,io.reg17,Mux(io.ctrlcsrWrite&(io.ctrlcsr === "h342".U),io.data,mcause))
+  mstatus:=Mux(io.ctrlcsrWrite&(io.ctrlcsr === "h300".U),io.data,mstatus)
+  mtvec:=Mux(io.ctrlcsrWrite&(io.ctrlcsr === "h305".U),io.data,mtvec)
+ 
 }

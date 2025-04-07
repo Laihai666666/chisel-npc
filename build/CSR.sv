@@ -26,10 +26,7 @@ module CSR(
   reg  [31:0] mepc;
   reg  [31:0] mstatus;
   reg  [31:0] mtvec;
-  wire        _GEN = io_ctrlcsr == 12'h341;
-  wire        _GEN_0 = io_ctrlcsr == 12'h342;
-  wire        _GEN_1 = io_ctrlcsr == 12'h300;
-  wire        _GEN_2 = io_ctrlcsr == 12'h305;
+  wire        _mepc_T = io_ctrlcsr == 12'h341;
   always @(posedge clock) begin
     if (reset) begin
       mcause <= 32'h0;
@@ -43,24 +40,28 @@ module CSR(
         mepc <= io_pc;
       end
       else begin
-        if (~io_ctrlcsrWrite | _GEN | ~_GEN_0) begin
-        end
-        else
+        if (io_ctrlcsrWrite & io_ctrlcsr == 12'h342)
           mcause <= io_data;
-        if (io_ctrlcsrWrite & _GEN)
+        if (io_ctrlcsrWrite & _mepc_T)
           mepc <= io_data;
       end
-      if (~io_ctrlcsrWrite | _GEN | _GEN_0 | ~_GEN_1) begin
-      end
-      else
+      if (io_ctrlcsrWrite & io_ctrlcsr == 12'h300)
         mstatus <= io_data;
-      if (~io_ctrlcsrWrite | _GEN | _GEN_0 | _GEN_1 | ~_GEN_2) begin
-      end
-      else
+      if (io_ctrlcsrWrite & io_ctrlcsr == 12'h305)
         mtvec <= io_data;
     end
   end // always @(posedge)
   assign io_csr =
-    _GEN ? mepc : _GEN_0 ? mcause : _GEN_1 ? mstatus : _GEN_2 ? mtvec : 32'h0;
+    _mepc_T
+      ? mepc
+      : io_ctrlcsr == 12'h342
+          ? mcause
+          : io_ctrlcsr == 12'h300
+              ? mstatus
+              : io_ctrlcsr == 12'h305
+                  ? mtvec
+                  : io_ctrlcsr == 12'h400
+                      ? 32'h79737978
+                      : io_ctrlcsr == 12'h401 ? 32'h23060351 : 32'h0;
 endmodule
 

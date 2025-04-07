@@ -11,6 +11,9 @@ import utils._
 class IDUIO extends Bundle {
   val in  = Flipped(Decoupled(new Message()))
   val out = Decoupled(new IDU_O())
+  val perf_alu = Output(Bool()) // ALU指令计数器信号
+  val perf_mem = Output(Bool()) // 访存指令计数器信号
+  val perf_csr = Output(Bool()) // CSR指令计数器信号
 }
 
 class IDU extends Module {
@@ -23,11 +26,23 @@ class IDU extends Module {
         s_decoding -> Mux(io.out.fire, s_idle, s_decoding)
     ))
 
-    when(state===s_idle){
-        io.out.valid:=0.U
-    }otherwise{
-        io.out.valid:=1.U
-    }
+    io.out.valid:=state===s_decoding
+
+    // 指令分类计数器信号
+    val is_alu = io.in.bits.inst(6,2) === "b01100".U ||  // R-type
+                io.in.bits.inst(6,2) === "b00100".U ||  // I-type ALU
+                io.in.bits.inst(6,2) === "b00101".U ||  // AUIPC
+                io.in.bits.inst(6,2) === "b01101".U ||    // LUI
+                io.in.bits.inst(6,2) === "b11011".U ||   //   JAL
+                io.in.bits.inst(6,2) === "b11001".U ||   // JALR
+                io.in.bits.inst(6,2) === "b11000".U    // B-type
+    val is_mem = io.in.bits.inst(6,2) === "b00000".U || // LOAD
+                io.in.bits.inst(6,2) === "b01000".U    // STORE
+    val is_csr = io.in.bits.inst(6,2) === "b11100".U    // CSR
+    
+    io.perf_alu := state === s_decoding && is_alu
+    io.perf_mem := state === s_decoding && is_mem
+    io.perf_csr := state === s_decoding && is_csr && !(io.out.bits.ctrlbreak)
   io.in.ready     := 1.U
   io.out.bits.rs1 := io.in.bits.inst(19, 15)
   io.out.bits.rs2 := io.in.bits.inst(24, 20)

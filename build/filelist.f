@@ -1,7 +1,7 @@
-extern_modules.sv
-UART.sv
+CLINT.sv
 Xbar.sv
 Aribiter.sv
+PerformanceCounter.sv
 IFU.sv
 IDU.sv
 EXU.sv
@@ -10,6 +10,6 @@ Registers.sv
 PCReg.sv
 CSR.sv
 WBU.sv
-Top.sv
-./SRAM.sv
+extern_modules.sv
+ysyx_23060351.sv
 ./Ebreak.sv

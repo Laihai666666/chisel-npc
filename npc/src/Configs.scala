@@ -12,11 +12,10 @@ object Configs {
   val DATA_WIDTH          = 32
   val DATA_WIDTH_H        = 16
   val DATA_WIDTH_B        = 8
-  val START_ADDR: UInt = 0x00000000.U
   val REG_NUMS       = 32
   val OP_TYPES_WIDTH = 4
   val REG_NUMS_LOG   = 5
-  val LS_B           = 0x1.U(8.W)
-  val LS_H           = 0x3.U(8.W)
-  val LS_W           = 0xf.U(8.W)
+  val LS_B           = 0x1.U(4.W)
+  val LS_H           = 0x3.U(4.W)
+  val LS_W           = 0xf.U(4.W)
 }

@@ -4,7 +4,7 @@ default: verilog
 
 verilog:
 	mkdir -p $(BUILD_DIR)
-	mill -i npc.runMain npc.Top 
+	mill -i npc.runMain npc.ysyx_23060351 
 
 test:
 	mill -i __.test
@@ -23,7 +23,7 @@ idea:
 	mill -i mill.scalalib.GenIdea/idea
 
 help:
-	mill -i npc.runMain npc.Top --help
+	mill -i npc.runMain npc.ysyx_23060351  --help
 
 clean:
 	-rm -rf $(BUILD_DIR)

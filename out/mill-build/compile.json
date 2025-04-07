@@ -1,8 +1,8 @@
 {
     "value": {
-        "analysisFile": "/home/lh/ysyx/ysyx-workbench/npc/chisel/out/mill-build/compile.dest/zinc",
-        "classes": "ref:v0:09f9b125:/home/lh/ysyx/ysyx-workbench/npc/chisel/out/mill-build/compile.dest/classes"
+        "analysisFile": "/home/lh/ysyx/ysyx-workbench/chisel/out/mill-build/compile.dest/zinc",
+        "classes": "ref:v0:83cb5a4a:/home/lh/ysyx/ysyx-workbench/chisel/out/mill-build/compile.dest/classes"
     },
-    "valueHash": 148819151,
-    "inputsHash": -2051560346
+    "valueHash": -1671356572,
+    "inputsHash": -181478340
 }

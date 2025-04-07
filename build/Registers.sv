@@ -26,144 +26,248 @@ module Registers(
                 io_reg17
 );
 
-  reg  [31:0]       regs_0;
-  reg  [31:0]       regs_1;
-  reg  [31:0]       regs_2;
-  reg  [31:0]       regs_3;
-  reg  [31:0]       regs_4;
-  reg  [31:0]       regs_5;
-  reg  [31:0]       regs_6;
-  reg  [31:0]       regs_7;
-  reg  [31:0]       regs_8;
-  reg  [31:0]       regs_9;
-  reg  [31:0]       regs_10;
-  reg  [31:0]       regs_11;
-  reg  [31:0]       regs_12;
-  reg  [31:0]       regs_13;
-  reg  [31:0]       regs_14;
-  reg  [31:0]       regs_15;
-  reg  [31:0]       regs_16;
-  reg  [31:0]       regs_17;
-  reg  [31:0]       regs_18;
-  reg  [31:0]       regs_19;
-  reg  [31:0]       regs_20;
-  reg  [31:0]       regs_21;
-  reg  [31:0]       regs_22;
-  reg  [31:0]       regs_23;
-  reg  [31:0]       regs_24;
-  reg  [31:0]       regs_25;
-  reg  [31:0]       regs_26;
-  reg  [31:0]       regs_27;
-  reg  [31:0]       regs_28;
-  reg  [31:0]       regs_29;
-  reg  [31:0]       regs_30;
-  reg  [31:0]       regs_31;
-  wire [31:0][31:0] _GEN =
-    {{regs_31},
-     {regs_30},
-     {regs_29},
-     {regs_28},
-     {regs_27},
-     {regs_26},
-     {regs_25},
-     {regs_24},
-     {regs_23},
-     {regs_22},
-     {regs_21},
-     {regs_20},
-     {regs_19},
-     {regs_18},
-     {regs_17},
-     {regs_16},
-     {regs_15},
-     {regs_14},
-     {regs_13},
-     {regs_12},
-     {regs_11},
-     {regs_10},
-     {regs_9},
-     {regs_8},
-     {regs_7},
-     {regs_6},
-     {regs_5},
-     {regs_4},
-     {regs_3},
-     {regs_2},
-     {regs_1},
-     {regs_0}};
+  reg  [31:0] regs_0;
+  reg  [31:0] regs_1;
+  reg  [31:0] regs_2;
+  reg  [31:0] regs_3;
+  reg  [31:0] regs_4;
+  reg  [31:0] regs_5;
+  reg  [31:0] regs_6;
+  reg  [31:0] regs_7;
+  reg  [31:0] regs_8;
+  reg  [31:0] regs_9;
+  reg  [31:0] regs_10;
+  reg  [31:0] regs_11;
+  reg  [31:0] regs_12;
+  reg  [31:0] regs_13;
+  reg  [31:0] regs_14;
+  reg  [31:0] regs_15;
+  reg  [31:0] regs_16;
+  reg  [31:0] regs_17;
+  reg  [31:0] regs_18;
+  reg  [31:0] regs_19;
+  reg  [31:0] regs_20;
+  reg  [31:0] regs_21;
+  reg  [31:0] regs_22;
+  reg  [31:0] regs_23;
+  reg  [31:0] regs_24;
+  reg  [31:0] regs_25;
+  reg  [31:0] regs_26;
+  reg  [31:0] regs_27;
+  reg  [31:0] regs_28;
+  reg  [31:0] regs_29;
+  reg  [31:0] regs_30;
+  reg  [31:0] regs_31;
+  reg  [31:0] casez_tmp;
+  always_comb begin
+    casez (io_rs1)
+      5'b00000:
+        casez_tmp = regs_0;
+      5'b00001:
+        casez_tmp = regs_1;
+      5'b00010:
+        casez_tmp = regs_2;
+      5'b00011:
+        casez_tmp = regs_3;
+      5'b00100:
+        casez_tmp = regs_4;
+      5'b00101:
+        casez_tmp = regs_5;
+      5'b00110:
+        casez_tmp = regs_6;
+      5'b00111:
+        casez_tmp = regs_7;
+      5'b01000:
+        casez_tmp = regs_8;
+      5'b01001:
+        casez_tmp = regs_9;
+      5'b01010:
+        casez_tmp = regs_10;
+      5'b01011:
+        casez_tmp = regs_11;
+      5'b01100:
+        casez_tmp = regs_12;
+      5'b01101:
+        casez_tmp = regs_13;
+      5'b01110:
+        casez_tmp = regs_14;
+      5'b01111:
+        casez_tmp = regs_15;
+      5'b10000:
+        casez_tmp = regs_16;
+      5'b10001:
+        casez_tmp = regs_17;
+      5'b10010:
+        casez_tmp = regs_18;
+      5'b10011:
+        casez_tmp = regs_19;
+      5'b10100:
+        casez_tmp = regs_20;
+      5'b10101:
+        casez_tmp = regs_21;
+      5'b10110:
+        casez_tmp = regs_22;
+      5'b10111:
+        casez_tmp = regs_23;
+      5'b11000:
+        casez_tmp = regs_24;
+      5'b11001:
+        casez_tmp = regs_25;
+      5'b11010:
+        casez_tmp = regs_26;
+      5'b11011:
+        casez_tmp = regs_27;
+      5'b11100:
+        casez_tmp = regs_28;
+      5'b11101:
+        casez_tmp = regs_29;
+      5'b11110:
+        casez_tmp = regs_30;
+      default:
+        casez_tmp = regs_31;
+    endcase
+  end // always_comb
+  reg  [31:0] casez_tmp_0;
+  always_comb begin
+    casez (io_rs2)
+      5'b00000:
+        casez_tmp_0 = regs_0;
+      5'b00001:
+        casez_tmp_0 = regs_1;
+      5'b00010:
+        casez_tmp_0 = regs_2;
+      5'b00011:
+        casez_tmp_0 = regs_3;
+      5'b00100:
+        casez_tmp_0 = regs_4;
+      5'b00101:
+        casez_tmp_0 = regs_5;
+      5'b00110:
+        casez_tmp_0 = regs_6;
+      5'b00111:
+        casez_tmp_0 = regs_7;
+      5'b01000:
+        casez_tmp_0 = regs_8;
+      5'b01001:
+        casez_tmp_0 = regs_9;
+      5'b01010:
+        casez_tmp_0 = regs_10;
+      5'b01011:
+        casez_tmp_0 = regs_11;
+      5'b01100:
+        casez_tmp_0 = regs_12;
+      5'b01101:
+        casez_tmp_0 = regs_13;
+      5'b01110:
+        casez_tmp_0 = regs_14;
+      5'b01111:
+        casez_tmp_0 = regs_15;
+      5'b10000:
+        casez_tmp_0 = regs_16;
+      5'b10001:
+        casez_tmp_0 = regs_17;
+      5'b10010:
+        casez_tmp_0 = regs_18;
+      5'b10011:
+        casez_tmp_0 = regs_19;
+      5'b10100:
+        casez_tmp_0 = regs_20;
+      5'b10101:
+        casez_tmp_0 = regs_21;
+      5'b10110:
+        casez_tmp_0 = regs_22;
+      5'b10111:
+        casez_tmp_0 = regs_23;
+      5'b11000:
+        casez_tmp_0 = regs_24;
+      5'b11001:
+        casez_tmp_0 = regs_25;
+      5'b11010:
+        casez_tmp_0 = regs_26;
+      5'b11011:
+        casez_tmp_0 = regs_27;
+      5'b11100:
+        casez_tmp_0 = regs_28;
+      5'b11101:
+        casez_tmp_0 = regs_29;
+      5'b11110:
+        casez_tmp_0 = regs_30;
+      default:
+        casez_tmp_0 = regs_31;
+    endcase
+  end // always_comb
+  wire        _GEN = io_ctrlRegWrite & (|io_rd);
+  wire [31:0] _GEN_0 = io_ctrlcs ? io_csr : io_ctrlJump ? io_pc + 32'h4 : io_dataWrite;
   always @(posedge clock) begin
-    automatic logic        _GEN_0 = io_ctrlRegWrite & (|io_rd);
-    automatic logic [31:0] _GEN_1;
-    _GEN_1 = io_ctrlcs ? io_csr : io_ctrlJump ? io_pc + 32'h4 : io_dataWrite;
-    if (~_GEN_0 | (|io_rd)) begin
+    if (~_GEN | (|io_rd)) begin
     end
     else
-      regs_0 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h1)
-      regs_1 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h2)
-      regs_2 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h3)
-      regs_3 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h4)
-      regs_4 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h5)
-      regs_5 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h6)
-      regs_6 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h7)
-      regs_7 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h8)
-      regs_8 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h9)
-      regs_9 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'hA)
-      regs_10 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'hB)
-      regs_11 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'hC)
-      regs_12 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'hD)
-      regs_13 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'hE)
-      regs_14 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'hF)
-      regs_15 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h10)
-      regs_16 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h11)
-      regs_17 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h12)
-      regs_18 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h13)
-      regs_19 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h14)
-      regs_20 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h15)
-      regs_21 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h16)
-      regs_22 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h17)
-      regs_23 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h18)
-      regs_24 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h19)
-      regs_25 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h1A)
-      regs_26 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h1B)
-      regs_27 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h1C)
-      regs_28 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h1D)
-      regs_29 <= _GEN_1;
-    if (_GEN_0 & io_rd == 5'h1E)
-      regs_30 <= _GEN_1;
-    if (_GEN_0 & (&io_rd))
-      regs_31 <= _GEN_1;
+      regs_0 <= _GEN_0;
+    if (_GEN & io_rd == 5'h1)
+      regs_1 <= _GEN_0;
+    if (_GEN & io_rd == 5'h2)
+      regs_2 <= _GEN_0;
+    if (_GEN & io_rd == 5'h3)
+      regs_3 <= _GEN_0;
+    if (_GEN & io_rd == 5'h4)
+      regs_4 <= _GEN_0;
+    if (_GEN & io_rd == 5'h5)
+      regs_5 <= _GEN_0;
+    if (_GEN & io_rd == 5'h6)
+      regs_6 <= _GEN_0;
+    if (_GEN & io_rd == 5'h7)
+      regs_7 <= _GEN_0;
+    if (_GEN & io_rd == 5'h8)
+      regs_8 <= _GEN_0;
+    if (_GEN & io_rd == 5'h9)
+      regs_9 <= _GEN_0;
+    if (_GEN & io_rd == 5'hA)
+      regs_10 <= _GEN_0;
+    if (_GEN & io_rd == 5'hB)
+      regs_11 <= _GEN_0;
+    if (_GEN & io_rd == 5'hC)
+      regs_12 <= _GEN_0;
+    if (_GEN & io_rd == 5'hD)
+      regs_13 <= _GEN_0;
+    if (_GEN & io_rd == 5'hE)
+      regs_14 <= _GEN_0;
+    if (_GEN & io_rd == 5'hF)
+      regs_15 <= _GEN_0;
+    if (_GEN & io_rd == 5'h10)
+      regs_16 <= _GEN_0;
+    if (_GEN & io_rd == 5'h11)
+      regs_17 <= _GEN_0;
+    if (_GEN & io_rd == 5'h12)
+      regs_18 <= _GEN_0;
+    if (_GEN & io_rd == 5'h13)
+      regs_19 <= _GEN_0;
+    if (_GEN & io_rd == 5'h14)
+      regs_20 <= _GEN_0;
+    if (_GEN & io_rd == 5'h15)
+      regs_21 <= _GEN_0;
+    if (_GEN & io_rd == 5'h16)
+      regs_22 <= _GEN_0;
+    if (_GEN & io_rd == 5'h17)
+      regs_23 <= _GEN_0;
+    if (_GEN & io_rd == 5'h18)
+      regs_24 <= _GEN_0;
+    if (_GEN & io_rd == 5'h19)
+      regs_25 <= _GEN_0;
+    if (_GEN & io_rd == 5'h1A)
+      regs_26 <= _GEN_0;
+    if (_GEN & io_rd == 5'h1B)
+      regs_27 <= _GEN_0;
+    if (_GEN & io_rd == 5'h1C)
+      regs_28 <= _GEN_0;
+    if (_GEN & io_rd == 5'h1D)
+      regs_29 <= _GEN_0;
+    if (_GEN & io_rd == 5'h1E)
+      regs_30 <= _GEN_0;
+    if (_GEN & (&io_rd))
+      regs_31 <= _GEN_0;
   end // always @(posedge)
-  assign io_dataRead1 = _GEN[io_rs1];
-  assign io_dataRead2 = _GEN[io_rs2];
-  assign io_reg17 = regs_17;
+  assign io_dataRead1 = casez_tmp;
+  assign io_dataRead2 = casez_tmp_0;
+  assign io_reg17 = regs_15;
 endmodule
 

@@ -24,7 +24,7 @@ module PCReg(
   reg [31:0] regPC;
   always @(posedge clock) begin
     if (reset)
-      regPC <= 32'h80000000;
+      regPC <= 32'h30000000;
     else if (io_enable) begin
       if (io_ctrlJump | io_ctrlBranch & io_resultBranch)
         regPC <= io_addrTarget;

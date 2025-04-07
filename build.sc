@@ -11,7 +11,13 @@ object npc extends ScalaModule with ScalafmtModule { m =>
     "-language:reflectiveCalls",
     "-deprecation",
     "-feature",
-    "-Xcheckinit"
+    "-Xcheckinit",
+  )
+  
+  override def forkArgs = Seq(
+    "-Xmx8G",
+    "-Xss128M",
+    "-Dchisel3.firrtlOptions=--target-dir build --infer-rw --repl-seq-mem -X verilog"
   )
   val chiselVersion = "6.5.0"
   def sources = T.sources {

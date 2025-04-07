@@ -16,7 +16,7 @@ class PCRegIO extends Bundle {
 
 class PCReg extends Module {
   val io    = IO(new PCRegIO())
-  val regPC = RegInit("h80000000".U(32.W))
+  val regPC = RegInit("h30000000".U(32.W))
   when(io.enable) {
     when(io.ctrlJump || (io.ctrlBranch && io.resultBranch)) {
       regPC := io.addrTarget

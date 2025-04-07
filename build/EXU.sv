@@ -16,13 +16,12 @@ module EXU(
                 io_in_bits_ctrlRegWrite,
                 io_in_bits_ctrlLoad,
                 io_in_bits_ctrlStore,
-  input  [7:0]  io_in_bits_ctrlLSType,
+  input  [3:0]  io_in_bits_ctrlLSType,
   input         io_in_bits_ctrlALUSrc,
                 io_in_bits_ctrlJAL,
                 io_in_bits_ctrlBranch,
   input  [3:0]  io_in_bits_ctrlOP,
   input         io_in_bits_ctrlSigned,
-                io_in_bits_ctrlbreak,
   input  [4:0]  io_in_bits_rs1,
                 io_in_bits_rs2,
                 io_in_bits_rd,
@@ -44,10 +43,9 @@ module EXU(
                 io_out_bits_ctrlBranch,
   output [11:0] io_out_bits_ctrlcsr,
   output        io_out_bits_ctrlcsrWrite,
-  output [7:0]  io_out_bits_ctrlLSType,
+  output [3:0]  io_out_bits_ctrlLSType,
   output        io_out_bits_ctrlSigned,
                 io_out_bits_ctrlecall,
-                io_out_bits_ctrlbreak,
   output [4:0]  io_out_bits_rs1,
                 io_out_bits_rs2,
                 io_out_bits_rd,
@@ -55,57 +53,93 @@ module EXU(
                 io_out_bits_pc,
   input  [31:0] io_wd_dataRead1,
                 io_wd_dataRead2,
-                io_wd_csr
+                io_wd_csr,
+  output        io_perf
 );
 
-  wire [31:0]       oprand1 =
+  wire [31:0] oprand1 =
     io_in_bits_ctrlJAL ? io_in_bits_pc : io_in_bits_ctrloneop ? 32'h0 : io_wd_dataRead1;
-  wire [31:0]       oprand2 =
+  wire [31:0] oprand2 =
     io_in_bits_ctrlALUSrc
       ? io_in_bits_imm
       : io_in_bits_ctrlcs ? io_wd_csr : io_wd_dataRead2;
-  wire [62:0]       _resultAlu_T_7 = {31'h0, oprand1} << oprand2[4:0];
-  wire [15:0][31:0] _GEN =
-    {{io_in_bits_pc + io_in_bits_imm},
-     {io_in_bits_ctrlBranch
-        ? io_in_bits_pc + io_in_bits_imm
-        : {31'h0,
-           io_in_bits_ctrlSigned
-             ? $signed(oprand1) < $signed(oprand2)
-             : oprand1 < oprand2}},
-     {io_in_bits_pc + io_in_bits_imm},
-     {io_in_bits_pc + io_in_bits_imm},
-     {$signed($signed(oprand1) >>> oprand2[4:0])},
-     {32'h0},
-     {oprand1 >> oprand2[4:0]},
-     {_resultAlu_T_7[31:0]},
-     {oprand1 ^ oprand2},
-     {32'h0},
-     {oprand1 | oprand2},
-     {oprand1 & oprand2},
-     {32'h0},
-     {oprand1 - oprand2},
-     {oprand1 + oprand2},
-     {io_in_bits_ctrlcs ? oprand1 : 32'h0}};
-  assign io_out_valid = io_in_valid;
-  assign io_out_bits_resultAlu = _GEN[io_in_bits_ctrlOP];
-  assign io_out_bits_resultBranch =
-    ~(io_in_bits_ctrlOP == 4'h0 | io_in_bits_ctrlOP == 4'h1 | io_in_bits_ctrlOP == 4'h2
-      | io_in_bits_ctrlOP == 4'h4 | io_in_bits_ctrlOP == 4'h5 | io_in_bits_ctrlOP == 4'h7
-      | io_in_bits_ctrlOP == 4'h8 | io_in_bits_ctrlOP == 4'h9 | io_in_bits_ctrlOP == 4'hB)
-    & (io_in_bits_ctrlOP == 4'hC
-         ? oprand1 == oprand2
-         : io_in_bits_ctrlOP == 4'hD
-             ? oprand1 != oprand2
-             : io_in_bits_ctrlOP == 4'hE
-                 ? io_in_bits_ctrlBranch
-                   & (io_in_bits_ctrlSigned
-                        ? $signed(oprand1) < $signed(oprand2)
-                        : oprand1 < oprand2)
-                 : (&io_in_bits_ctrlOP)
-                   & (io_in_bits_ctrlSigned
+  wire        _resultBranch_T_4 = io_in_bits_ctrlOP == 4'hD;
+  wire        _resultBranch_T_8 = io_in_bits_ctrlOP == 4'hE;
+  wire        _resultBranch_T_12 = oprand1 < oprand2;
+  wire        _resultBranch_T_18 = oprand1 >= oprand2;
+  reg  [31:0] casez_tmp;
+  wire [31:0] _GEN = {27'h0, oprand2[4:0]};
+  wire [31:0] _resultAlu_T_45 = io_in_bits_pc + io_in_bits_imm;
+  wire [31:0] _resultAlu_T_54 =
+    _resultBranch_T_4
+      ? (io_in_bits_ctrlBranch ? _resultAlu_T_45 : {31'h0, oprand1 != oprand2})
+      : _resultBranch_T_8
+          ? (io_in_bits_ctrlBranch
+               ? _resultAlu_T_45
+               : {31'h0,
+                  io_in_bits_ctrlSigned
+                    ? $signed(oprand1) < $signed(oprand2)
+                    : _resultBranch_T_12})
+          : (&io_in_bits_ctrlOP)
+              ? (io_in_bits_ctrlBranch
+                   ? _resultAlu_T_45
+                   : {31'h0,
+                      io_in_bits_ctrlSigned
                         ? $signed(oprand1) >= $signed(oprand2)
-                        : oprand1 >= oprand2));
+                        : _resultBranch_T_18})
+              : 32'h0;
+  wire [62:0] _resultAlu_T_15 = {31'h0, oprand1} << oprand2[4:0];
+  always_comb begin
+    casez (io_in_bits_ctrlOP)
+      4'b0000:
+        casez_tmp = io_in_bits_ctrlcs ? oprand1 : 32'h0;
+      4'b0001:
+        casez_tmp = oprand1 + oprand2;
+      4'b0010:
+        casez_tmp = oprand1 - oprand2;
+      4'b0011:
+        casez_tmp = _resultAlu_T_54;
+      4'b0100:
+        casez_tmp = oprand1 & oprand2;
+      4'b0101:
+        casez_tmp = oprand1 | oprand2;
+      4'b0110:
+        casez_tmp = _resultAlu_T_54;
+      4'b0111:
+        casez_tmp = oprand1 ^ oprand2;
+      4'b1000:
+        casez_tmp = _resultAlu_T_15[31:0];
+      4'b1001:
+        casez_tmp = oprand1 >> _GEN;
+      4'b1010:
+        casez_tmp = _resultAlu_T_54;
+      4'b1011:
+        casez_tmp = $signed($signed(oprand1) >>> _GEN);
+      4'b1100:
+        casez_tmp = io_in_bits_ctrlBranch ? _resultAlu_T_45 : {31'h0, oprand1 == oprand2};
+      4'b1101:
+        casez_tmp = _resultAlu_T_54;
+      4'b1110:
+        casez_tmp = _resultAlu_T_54;
+      default:
+        casez_tmp = _resultAlu_T_54;
+    endcase
+  end // always_comb
+  assign io_out_valid = io_in_valid;
+  assign io_out_bits_resultAlu = casez_tmp;
+  assign io_out_bits_resultBranch =
+    io_in_bits_ctrlOP == 4'hC
+      ? oprand1 == oprand2
+      : _resultBranch_T_4
+          ? oprand1 != oprand2
+          : _resultBranch_T_8
+              ? (io_in_bits_ctrlSigned
+                   ? $signed(oprand1) < $signed(oprand2)
+                   : _resultBranch_T_12)
+              : (&io_in_bits_ctrlOP)
+                & (io_in_bits_ctrlSigned
+                     ? $signed(oprand1) >= $signed(oprand2)
+                     : _resultBranch_T_18);
   assign io_out_bits_ctrlRegWrite = io_in_bits_ctrlRegWrite;
   assign io_out_bits_ctrlLoad = io_in_bits_ctrlLoad;
   assign io_out_bits_ctrlStore = io_in_bits_ctrlStore;
@@ -117,11 +151,11 @@ module EXU(
   assign io_out_bits_ctrlLSType = io_in_bits_ctrlLSType;
   assign io_out_bits_ctrlSigned = io_in_bits_ctrlSigned;
   assign io_out_bits_ctrlecall = io_in_bits_ctrlecall;
-  assign io_out_bits_ctrlbreak = io_in_bits_ctrlbreak;
   assign io_out_bits_rs1 = io_in_bits_rs1;
   assign io_out_bits_rs2 = io_in_bits_rs2;
   assign io_out_bits_rd = io_in_bits_rd;
   assign io_out_bits_wdata = io_wd_dataRead2;
   assign io_out_bits_pc = io_in_bits_pc;
+  assign io_perf = io_in_valid & ~io_in_bits_ctrlLoad & ~io_in_bits_ctrlStore;
 endmodule
 
