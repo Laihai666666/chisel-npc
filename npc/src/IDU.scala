@@ -77,7 +77,7 @@ class IDU extends Module {
   val ctrlALUSrc   = WireDefault(false.B)
   val ctrlJAL      = WireDefault(false.B)
   val ctrlBranch   = WireDefault(false.B)
-  val ctrlOP       = WireDefault(0.U(OP_TYPES_WIDTH.W))
+  val ctrlOP       = WireDefault(0.U(4.W))
   val ctrlSigned   = WireDefault(true.B)
   val ctrlcs       = WireDefault(false.B)
   val ctrlecall    = WireDefault(false.B)

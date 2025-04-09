@@ -66,9 +66,9 @@ module Aribiter(
     if (reset)
       state <= 1'h0;
     else if (state)
-      state <= ~io_lsu_ack;
+      state <= ~(state & io_lsu_ack) & state;
     else
-      state <= io_ifu_ack;
+      state <= io_ifu_ack | state;
   end // always @(posedge)
   Xbar xbar (
     .clock                  (clock),

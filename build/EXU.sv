@@ -63,9 +63,10 @@ module EXU(
     io_in_bits_ctrlALUSrc
       ? io_in_bits_imm
       : io_in_bits_ctrlcs ? io_wd_csr : io_wd_dataRead2;
-  wire        _resultBranch_T_4 = io_in_bits_ctrlOP == 4'hD;
-  wire        _resultBranch_T_8 = io_in_bits_ctrlOP == 4'hE;
+  wire        _resultBranch_T_4 = io_in_bits_ctrlOP == 4'hA;
+  wire        _resultBranch_T_8 = io_in_bits_ctrlOP == 4'hB;
   wire        _resultBranch_T_12 = oprand1 < oprand2;
+  wire        _resultBranch_T_14 = io_in_bits_ctrlOP == 4'hC;
   wire        _resultBranch_T_18 = oprand1 >= oprand2;
   reg  [31:0] casez_tmp;
   wire [31:0] _GEN = {27'h0, oprand2[4:0]};
@@ -80,7 +81,7 @@ module EXU(
                   io_in_bits_ctrlSigned
                     ? $signed(oprand1) < $signed(oprand2)
                     : _resultBranch_T_12})
-          : (&io_in_bits_ctrlOP)
+          : _resultBranch_T_14
               ? (io_in_bits_ctrlBranch
                    ? _resultAlu_T_45
                    : {31'h0,
@@ -98,25 +99,25 @@ module EXU(
       4'b0010:
         casez_tmp = oprand1 - oprand2;
       4'b0011:
-        casez_tmp = _resultAlu_T_54;
-      4'b0100:
         casez_tmp = oprand1 & oprand2;
-      4'b0101:
+      4'b0100:
         casez_tmp = oprand1 | oprand2;
-      4'b0110:
-        casez_tmp = _resultAlu_T_54;
-      4'b0111:
+      4'b0101:
         casez_tmp = oprand1 ^ oprand2;
-      4'b1000:
+      4'b0110:
         casez_tmp = _resultAlu_T_15[31:0];
-      4'b1001:
+      4'b0111:
         casez_tmp = oprand1 >> _GEN;
+      4'b1000:
+        casez_tmp = $signed($signed(oprand1) >>> _GEN);
+      4'b1001:
+        casez_tmp = io_in_bits_ctrlBranch ? _resultAlu_T_45 : {31'h0, oprand1 == oprand2};
       4'b1010:
         casez_tmp = _resultAlu_T_54;
       4'b1011:
-        casez_tmp = $signed($signed(oprand1) >>> _GEN);
+        casez_tmp = _resultAlu_T_54;
       4'b1100:
-        casez_tmp = io_in_bits_ctrlBranch ? _resultAlu_T_45 : {31'h0, oprand1 == oprand2};
+        casez_tmp = _resultAlu_T_54;
       4'b1101:
         casez_tmp = _resultAlu_T_54;
       4'b1110:
@@ -128,7 +129,7 @@ module EXU(
   assign io_out_valid = io_in_valid;
   assign io_out_bits_resultAlu = casez_tmp;
   assign io_out_bits_resultBranch =
-    io_in_bits_ctrlOP == 4'hC
+    io_in_bits_ctrlOP == 4'h9
       ? oprand1 == oprand2
       : _resultBranch_T_4
           ? oprand1 != oprand2
@@ -136,7 +137,7 @@ module EXU(
               ? (io_in_bits_ctrlSigned
                    ? $signed(oprand1) < $signed(oprand2)
                    : _resultBranch_T_12)
-              : (&io_in_bits_ctrlOP)
+              : _resultBranch_T_14
                 & (io_in_bits_ctrlSigned
                      ? $signed(oprand1) >= $signed(oprand2)
                      : _resultBranch_T_18);

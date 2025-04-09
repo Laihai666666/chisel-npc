@@ -60,8 +60,8 @@
         "qref:v1:6cc36184:/home/lh/.cache/coursier/v1/http/mirrors.cloud.tencent.com/nexus/repository/maven-public/org/fusesource/jansi/jansi/1.18/jansi-1.18.jar",
         "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/chisel/npc/compile-resources",
         "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/chisel/npc/resources",
-        "ref:v0:cdd7b484:/home/lh/ysyx/ysyx-workbench/chisel/out/npc/compile.dest/classes"
+        "ref:v0:b0745f49:/home/lh/ysyx/ysyx-workbench/chisel/out/npc/compile.dest/classes"
     ],
-    "valueHash": 1320607027,
-    "inputsHash": 1497018490
+    "valueHash": -1478419785,
+    "inputsHash": 61903652
 }
