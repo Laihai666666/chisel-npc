@@ -2,8 +2,8 @@
     "value": [
         "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/chisel/npc/compile-resources",
         "ref:v0:c984eca8:/home/lh/ysyx/ysyx-workbench/chisel/npc/resources",
-        "ref:v0:b0745f49:/home/lh/ysyx/ysyx-workbench/chisel/out/npc/compile.dest/classes"
+        "ref:v0:8db103aa:/home/lh/ysyx/ysyx-workbench/chisel/out/npc/compile.dest/classes"
     ],
-    "valueHash": 41502249,
-    "inputsHash": 1068637612
+    "valueHash": -1656980673,
+    "inputsHash": -1726952317
 }

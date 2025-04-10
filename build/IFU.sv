@@ -19,44 +19,444 @@ module IFU(
   output        io_out_valid,
   output [31:0] io_out_bits_inst,
                 io_out_bits_pc,
+  output        io_perf,
   input         io_axi_in_arready,
                 io_axi_in_rvalid,
   input  [31:0] io_axi_in_rdata,
-  input  [1:0]  io_axi_in_rresp,
+  input         io_axi_in_rlast,
   output        io_axi_out_arvalid,
   output [31:0] io_axi_out_araddr,
-  output        io_perf
+  output [2:0]  io_axi_out_arsize,
+  output        io_axi_out_rready
 );
 
+  reg         valid_0;
+  reg         valid_1;
+  reg         valid_2;
+  reg         valid_3;
+  reg         valid_4;
+  reg         valid_5;
+  reg         valid_6;
+  reg         valid_7;
+  reg         valid_8;
+  reg         valid_9;
+  reg         valid_10;
+  reg         valid_11;
+  reg         valid_12;
+  reg         valid_13;
+  reg         valid_14;
+  reg         valid_15;
+  reg  [25:0] tags_0;
+  reg  [25:0] tags_1;
+  reg  [25:0] tags_2;
+  reg  [25:0] tags_3;
+  reg  [25:0] tags_4;
+  reg  [25:0] tags_5;
+  reg  [25:0] tags_6;
+  reg  [25:0] tags_7;
+  reg  [25:0] tags_8;
+  reg  [25:0] tags_9;
+  reg  [25:0] tags_10;
+  reg  [25:0] tags_11;
+  reg  [25:0] tags_12;
+  reg  [25:0] tags_13;
+  reg  [25:0] tags_14;
+  reg  [25:0] tags_15;
+  reg  [31:0] data_0;
+  reg  [31:0] data_1;
+  reg  [31:0] data_2;
+  reg  [31:0] data_3;
+  reg  [31:0] data_4;
+  reg  [31:0] data_5;
+  reg  [31:0] data_6;
+  reg  [31:0] data_7;
+  reg  [31:0] data_8;
+  reg  [31:0] data_9;
+  reg  [31:0] data_10;
+  reg  [31:0] data_11;
+  reg  [31:0] data_12;
+  reg  [31:0] data_13;
+  reg  [31:0] data_14;
+  reg  [31:0] data_15;
   reg  [1:0]  state;
+  reg         ifu_req;
   reg  [31:0] inst;
-  reg         read_i;
-  wire        _io_out_valid_T = state == 2'h2;
-  wire        io_perf_0 = _io_out_valid_T & io_axi_in_rvalid & io_axi_in_rresp == 2'h0;
+  wire        is_cacheable =
+    io_pc > 32'h2FFFFFFF & io_pc < 32'h40000000 | io_pc[31] & io_pc < 32'hA0000000
+    | io_pc > 32'h9FFFFFFF & io_pc < 32'hB0000000;
+  wire        _GEN = state == 2'h0;
+  wire        _GEN_0 = state == 2'h1;
+  reg  [25:0] casez_tmp;
+  always_comb begin
+    casez (io_pc[5:2])
+      4'b0000:
+        casez_tmp = tags_0;
+      4'b0001:
+        casez_tmp = tags_1;
+      4'b0010:
+        casez_tmp = tags_2;
+      4'b0011:
+        casez_tmp = tags_3;
+      4'b0100:
+        casez_tmp = tags_4;
+      4'b0101:
+        casez_tmp = tags_5;
+      4'b0110:
+        casez_tmp = tags_6;
+      4'b0111:
+        casez_tmp = tags_7;
+      4'b1000:
+        casez_tmp = tags_8;
+      4'b1001:
+        casez_tmp = tags_9;
+      4'b1010:
+        casez_tmp = tags_10;
+      4'b1011:
+        casez_tmp = tags_11;
+      4'b1100:
+        casez_tmp = tags_12;
+      4'b1101:
+        casez_tmp = tags_13;
+      4'b1110:
+        casez_tmp = tags_14;
+      default:
+        casez_tmp = tags_15;
+    endcase
+  end // always_comb
+  reg         casez_tmp_0;
+  always_comb begin
+    casez (io_pc[5:2])
+      4'b0000:
+        casez_tmp_0 = valid_0;
+      4'b0001:
+        casez_tmp_0 = valid_1;
+      4'b0010:
+        casez_tmp_0 = valid_2;
+      4'b0011:
+        casez_tmp_0 = valid_3;
+      4'b0100:
+        casez_tmp_0 = valid_4;
+      4'b0101:
+        casez_tmp_0 = valid_5;
+      4'b0110:
+        casez_tmp_0 = valid_6;
+      4'b0111:
+        casez_tmp_0 = valid_7;
+      4'b1000:
+        casez_tmp_0 = valid_8;
+      4'b1001:
+        casez_tmp_0 = valid_9;
+      4'b1010:
+        casez_tmp_0 = valid_10;
+      4'b1011:
+        casez_tmp_0 = valid_11;
+      4'b1100:
+        casez_tmp_0 = valid_12;
+      4'b1101:
+        casez_tmp_0 = valid_13;
+      4'b1110:
+        casez_tmp_0 = valid_14;
+      default:
+        casez_tmp_0 = valid_15;
+    endcase
+  end // always_comb
+  wire        hit = casez_tmp_0 & casez_tmp == io_pc[31:6];
+  reg  [31:0] casez_tmp_1;
+  always_comb begin
+    casez (io_pc[5:2])
+      4'b0000:
+        casez_tmp_1 = data_0;
+      4'b0001:
+        casez_tmp_1 = data_1;
+      4'b0010:
+        casez_tmp_1 = data_2;
+      4'b0011:
+        casez_tmp_1 = data_3;
+      4'b0100:
+        casez_tmp_1 = data_4;
+      4'b0101:
+        casez_tmp_1 = data_5;
+      4'b0110:
+        casez_tmp_1 = data_6;
+      4'b0111:
+        casez_tmp_1 = data_7;
+      4'b1000:
+        casez_tmp_1 = data_8;
+      4'b1001:
+        casez_tmp_1 = data_9;
+      4'b1010:
+        casez_tmp_1 = data_10;
+      4'b1011:
+        casez_tmp_1 = data_11;
+      4'b1100:
+        casez_tmp_1 = data_12;
+      4'b1101:
+        casez_tmp_1 = data_13;
+      4'b1110:
+        casez_tmp_1 = data_14;
+      default:
+        casez_tmp_1 = data_15;
+    endcase
+  end // always_comb
+  wire        _GEN_1 = state == 2'h2;
+  wire        _GEN_2 = _GEN | _GEN_0;
+  wire        _GEN_3 = _GEN | _GEN_0 | _GEN_1;
+  wire        _GEN_4 = (&state) & io_axi_in_rvalid;
+  reg  [31:0] casez_tmp_2;
+  always_comb begin
+    casez (state)
+      2'b00:
+        casez_tmp_2 = inst;
+      2'b01:
+        casez_tmp_2 = hit ? casez_tmp_1 : inst;
+      2'b10:
+        casez_tmp_2 = inst;
+      default:
+        casez_tmp_2 = _GEN_1 | ~_GEN_4 ? inst : io_axi_in_rdata;
+    endcase
+  end // always_comb
+  reg  [1:0]  casez_tmp_3;
+  always_comb begin
+    casez (state)
+      2'b00:
+        casez_tmp_3 = ifu_req ? (is_cacheable ? 2'h1 : 2'h2) : state;
+      2'b01:
+        casez_tmp_3 = {~hit, 1'h0};
+      2'b10:
+        casez_tmp_3 = io_axi_in_arready ? 2'h3 : state;
+      default:
+        casez_tmp_3 = (&state) & io_axi_in_rvalid & io_axi_in_rlast ? 2'h0 : state;
+    endcase
+  end // always_comb
+  wire        io_perf_0 = ~_GEN & (_GEN_0 ? hit : ~_GEN_1 & _GEN_4 & io_axi_in_rlast);
+  wire        _GEN_5 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h0;
+  wire        _GEN_6 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h1;
+  wire        _GEN_7 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h2;
+  wire        _GEN_8 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h3;
+  wire        _GEN_9 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h4;
+  wire        _GEN_10 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h5;
+  wire        _GEN_11 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h6;
+  wire        _GEN_12 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h7;
+  wire        _GEN_13 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h8;
+  wire        _GEN_14 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'h9;
+  wire        _GEN_15 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'hA;
+  wire        _GEN_16 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'hB;
+  wire        _GEN_17 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'hC;
+  wire        _GEN_18 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'hD;
+  wire        _GEN_19 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & io_pc[5:2] == 4'hE;
+  wire        _GEN_20 =
+    (&state) & io_axi_in_rvalid & io_axi_in_rlast & is_cacheable & (&(io_pc[5:2]));
+  wire        _GEN_21 = _GEN_3 | ~_GEN_5;
+  wire        _GEN_22 = _GEN_3 | ~_GEN_6;
+  wire        _GEN_23 = _GEN_3 | ~_GEN_7;
+  wire        _GEN_24 = _GEN_3 | ~_GEN_8;
+  wire        _GEN_25 = _GEN_3 | ~_GEN_9;
+  wire        _GEN_26 = _GEN_3 | ~_GEN_10;
+  wire        _GEN_27 = _GEN_3 | ~_GEN_11;
+  wire        _GEN_28 = _GEN_3 | ~_GEN_12;
+  wire        _GEN_29 = _GEN_3 | ~_GEN_13;
+  wire        _GEN_30 = _GEN_3 | ~_GEN_14;
+  wire        _GEN_31 = _GEN_3 | ~_GEN_15;
+  wire        _GEN_32 = _GEN_3 | ~_GEN_16;
+  wire        _GEN_33 = _GEN_3 | ~_GEN_17;
+  wire        _GEN_34 = _GEN_3 | ~_GEN_18;
+  wire        _GEN_35 = _GEN_3 | ~_GEN_19;
+  wire        _GEN_36 = _GEN_3 | ~_GEN_20;
   always @(posedge clock) begin
     if (reset) begin
+      valid_0 <= 1'h0;
+      valid_1 <= 1'h0;
+      valid_2 <= 1'h0;
+      valid_3 <= 1'h0;
+      valid_4 <= 1'h0;
+      valid_5 <= 1'h0;
+      valid_6 <= 1'h0;
+      valid_7 <= 1'h0;
+      valid_8 <= 1'h0;
+      valid_9 <= 1'h0;
+      valid_10 <= 1'h0;
+      valid_11 <= 1'h0;
+      valid_12 <= 1'h0;
+      valid_13 <= 1'h0;
+      valid_14 <= 1'h0;
+      valid_15 <= 1'h0;
       state <= 2'h0;
+      ifu_req <= 1'h1;
       inst <= 32'h0;
-      read_i <= 1'h1;
     end
     else begin
-      if (state == 2'h2)
-        state <= {~io_perf_0, 1'h0};
-      else if (state == 2'h1)
-        state <= io_axi_in_arready ? 2'h2 : 2'h1;
-      else
-        state <= {1'h0, state == 2'h0 & read_i};
-      if (_io_out_valid_T & io_axi_in_rvalid)
-        inst <= io_axi_in_rdata;
-      read_i <= io_ifu_req;
+      valid_0 <= ~_GEN_3 & _GEN_5 | valid_0;
+      valid_1 <= ~_GEN_3 & _GEN_6 | valid_1;
+      valid_2 <= ~_GEN_3 & _GEN_7 | valid_2;
+      valid_3 <= ~_GEN_3 & _GEN_8 | valid_3;
+      valid_4 <= ~_GEN_3 & _GEN_9 | valid_4;
+      valid_5 <= ~_GEN_3 & _GEN_10 | valid_5;
+      valid_6 <= ~_GEN_3 & _GEN_11 | valid_6;
+      valid_7 <= ~_GEN_3 & _GEN_12 | valid_7;
+      valid_8 <= ~_GEN_3 & _GEN_13 | valid_8;
+      valid_9 <= ~_GEN_3 & _GEN_14 | valid_9;
+      valid_10 <= ~_GEN_3 & _GEN_15 | valid_10;
+      valid_11 <= ~_GEN_3 & _GEN_16 | valid_11;
+      valid_12 <= ~_GEN_3 & _GEN_17 | valid_12;
+      valid_13 <= ~_GEN_3 & _GEN_18 | valid_13;
+      valid_14 <= ~_GEN_3 & _GEN_19 | valid_14;
+      valid_15 <= ~_GEN_3 & _GEN_20 | valid_15;
+      state <= casez_tmp_3;
+      ifu_req <= io_ifu_req;
+      inst <= casez_tmp_2;
     end
+    if (_GEN_21) begin
+    end
+    else
+      tags_0 <= io_pc[31:6];
+    if (_GEN_22) begin
+    end
+    else
+      tags_1 <= io_pc[31:6];
+    if (_GEN_23) begin
+    end
+    else
+      tags_2 <= io_pc[31:6];
+    if (_GEN_24) begin
+    end
+    else
+      tags_3 <= io_pc[31:6];
+    if (_GEN_25) begin
+    end
+    else
+      tags_4 <= io_pc[31:6];
+    if (_GEN_26) begin
+    end
+    else
+      tags_5 <= io_pc[31:6];
+    if (_GEN_27) begin
+    end
+    else
+      tags_6 <= io_pc[31:6];
+    if (_GEN_28) begin
+    end
+    else
+      tags_7 <= io_pc[31:6];
+    if (_GEN_29) begin
+    end
+    else
+      tags_8 <= io_pc[31:6];
+    if (_GEN_30) begin
+    end
+    else
+      tags_9 <= io_pc[31:6];
+    if (_GEN_31) begin
+    end
+    else
+      tags_10 <= io_pc[31:6];
+    if (_GEN_32) begin
+    end
+    else
+      tags_11 <= io_pc[31:6];
+    if (_GEN_33) begin
+    end
+    else
+      tags_12 <= io_pc[31:6];
+    if (_GEN_34) begin
+    end
+    else
+      tags_13 <= io_pc[31:6];
+    if (_GEN_35) begin
+    end
+    else
+      tags_14 <= io_pc[31:6];
+    if (_GEN_36) begin
+    end
+    else
+      tags_15 <= io_pc[31:6];
+    if (_GEN_21) begin
+    end
+    else
+      data_0 <= io_axi_in_rdata;
+    if (_GEN_22) begin
+    end
+    else
+      data_1 <= io_axi_in_rdata;
+    if (_GEN_23) begin
+    end
+    else
+      data_2 <= io_axi_in_rdata;
+    if (_GEN_24) begin
+    end
+    else
+      data_3 <= io_axi_in_rdata;
+    if (_GEN_25) begin
+    end
+    else
+      data_4 <= io_axi_in_rdata;
+    if (_GEN_26) begin
+    end
+    else
+      data_5 <= io_axi_in_rdata;
+    if (_GEN_27) begin
+    end
+    else
+      data_6 <= io_axi_in_rdata;
+    if (_GEN_28) begin
+    end
+    else
+      data_7 <= io_axi_in_rdata;
+    if (_GEN_29) begin
+    end
+    else
+      data_8 <= io_axi_in_rdata;
+    if (_GEN_30) begin
+    end
+    else
+      data_9 <= io_axi_in_rdata;
+    if (_GEN_31) begin
+    end
+    else
+      data_10 <= io_axi_in_rdata;
+    if (_GEN_32) begin
+    end
+    else
+      data_11 <= io_axi_in_rdata;
+    if (_GEN_33) begin
+    end
+    else
+      data_12 <= io_axi_in_rdata;
+    if (_GEN_34) begin
+    end
+    else
+      data_13 <= io_axi_in_rdata;
+    if (_GEN_35) begin
+    end
+    else
+      data_14 <= io_axi_in_rdata;
+    if (_GEN_36) begin
+    end
+    else
+      data_15 <= io_axi_in_rdata;
   end // always @(posedge)
   assign io_ifu_ack = io_perf_0;
   assign io_out_valid = io_perf_0;
   assign io_out_bits_inst = inst;
   assign io_out_bits_pc = io_pc;
-  assign io_axi_out_arvalid = state == 2'h1;
-  assign io_axi_out_araddr = io_pc;
   assign io_perf = io_perf_0;
+  assign io_axi_out_arvalid = ~_GEN_2 & _GEN_1;
+  assign io_axi_out_araddr = _GEN_2 | ~_GEN_1 ? 32'h0 : io_pc;
+  assign io_axi_out_arsize = _GEN_2 ? 3'h0 : {1'h0, _GEN_1, 1'h0};
+  assign io_axi_out_rready = ~_GEN_3 & (&state);
 endmodule
 

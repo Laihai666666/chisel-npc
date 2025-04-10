@@ -153,13 +153,15 @@ module ysyx_23060351(
   wire        _ifu_io_out_valid;
   wire [31:0] _ifu_io_out_bits_inst;
   wire [31:0] _ifu_io_out_bits_pc;
+  wire        _ifu_io_perf;
   wire        _ifu_io_axi_out_arvalid;
   wire [31:0] _ifu_io_axi_out_araddr;
-  wire        _ifu_io_perf;
+  wire [2:0]  _ifu_io_axi_out_arsize;
+  wire        _ifu_io_axi_out_rready;
   wire        _aribiter_io_axi_ifu_in_arready;
   wire        _aribiter_io_axi_ifu_in_rvalid;
   wire [31:0] _aribiter_io_axi_ifu_in_rdata;
-  wire [1:0]  _aribiter_io_axi_ifu_in_rresp;
+  wire        _aribiter_io_axi_ifu_in_rlast;
   wire        _aribiter_io_axi_lsu_in_awready;
   wire        _aribiter_io_axi_lsu_in_wready;
   wire        _aribiter_io_axi_lsu_in_bvalid;
@@ -174,9 +176,11 @@ module ysyx_23060351(
     .io_axi_ifu_in_arready  (_aribiter_io_axi_ifu_in_arready),
     .io_axi_ifu_in_rvalid   (_aribiter_io_axi_ifu_in_rvalid),
     .io_axi_ifu_in_rdata    (_aribiter_io_axi_ifu_in_rdata),
-    .io_axi_ifu_in_rresp    (_aribiter_io_axi_ifu_in_rresp),
+    .io_axi_ifu_in_rlast    (_aribiter_io_axi_ifu_in_rlast),
     .io_axi_ifu_out_arvalid (_ifu_io_axi_out_arvalid),
     .io_axi_ifu_out_araddr  (_ifu_io_axi_out_araddr),
+    .io_axi_ifu_out_arsize  (_ifu_io_axi_out_arsize),
+    .io_axi_ifu_out_rready  (_ifu_io_axi_out_rready),
     .io_axi_lsu_in_awready  (_aribiter_io_axi_lsu_in_awready),
     .io_axi_lsu_in_wready   (_aribiter_io_axi_lsu_in_wready),
     .io_axi_lsu_in_bvalid   (_aribiter_io_axi_lsu_in_bvalid),
@@ -199,7 +203,7 @@ module ysyx_23060351(
     .io_axi_soc_in_arready  (io_master_arready),
     .io_axi_soc_in_rvalid   (io_master_rvalid),
     .io_axi_soc_in_rdata    (io_master_rdata),
-    .io_axi_soc_in_rresp    (io_master_rresp),
+    .io_axi_soc_in_rlast    (io_master_rlast),
     .io_axi_soc_out_awaddr  (io_master_awaddr),
     .io_axi_soc_out_awvalid (io_master_awvalid),
     .io_axi_soc_out_awsize  (io_master_awsize),
@@ -233,13 +237,15 @@ module ysyx_23060351(
     .io_out_valid       (_ifu_io_out_valid),
     .io_out_bits_inst   (_ifu_io_out_bits_inst),
     .io_out_bits_pc     (_ifu_io_out_bits_pc),
+    .io_perf            (_ifu_io_perf),
     .io_axi_in_arready  (_aribiter_io_axi_ifu_in_arready),
     .io_axi_in_rvalid   (_aribiter_io_axi_ifu_in_rvalid),
     .io_axi_in_rdata    (_aribiter_io_axi_ifu_in_rdata),
-    .io_axi_in_rresp    (_aribiter_io_axi_ifu_in_rresp),
+    .io_axi_in_rlast    (_aribiter_io_axi_ifu_in_rlast),
     .io_axi_out_arvalid (_ifu_io_axi_out_arvalid),
     .io_axi_out_araddr  (_ifu_io_axi_out_araddr),
-    .io_perf            (_ifu_io_perf)
+    .io_axi_out_arsize  (_ifu_io_axi_out_arsize),
+    .io_axi_out_rready  (_ifu_io_axi_out_rready)
   );
   IDU idu (
     .clock                    (clock),

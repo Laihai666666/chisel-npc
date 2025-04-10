@@ -12,7 +12,7 @@
         "ref:v0:df886a6b:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/PerformanceCounter.scala",
         "ref:v0:bd31e7c3:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/CLINT.scala",
         "ref:v0:4941b738:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/Configs.scala",
-        "ref:v0:8bcab61c:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/IFU.scala",
+        "ref:v0:2fb60e5e:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/IFU.scala",
         "ref:v0:8a46471a:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/WBU.scala",
         "ref:v0:6b6b7b2f:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/Break.scala",
         "ref:v0:2f7502f1:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/LSU.scala",
@@ -29,12 +29,12 @@
         "ref:v0:df886a6b:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/PerformanceCounter.scala",
         "ref:v0:bd31e7c3:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/CLINT.scala",
         "ref:v0:4941b738:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/Configs.scala",
-        "ref:v0:8bcab61c:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/IFU.scala",
+        "ref:v0:2fb60e5e:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/IFU.scala",
         "ref:v0:8a46471a:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/WBU.scala",
         "ref:v0:6b6b7b2f:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/Break.scala",
         "ref:v0:2f7502f1:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/LSU.scala",
         "ref:v0:2874282f:/home/lh/ysyx/ysyx-workbench/chisel/npc/src/PCReg.scala"
     ],
-    "valueHash": -1203827630,
-    "inputsHash": -64748008
+    "valueHash": -302835879,
+    "inputsHash": 1698786494
 }

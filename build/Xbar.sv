@@ -19,7 +19,7 @@ module Xbar(
                 io_axi_in_arready,
                 io_axi_in_rvalid,
   output [31:0] io_axi_in_rdata,
-  output [1:0]  io_axi_in_rresp,
+  output        io_axi_in_rlast,
   input  [31:0] io_axi_out_awaddr,
   input         io_axi_out_awvalid,
   input  [2:0]  io_axi_out_awsize,
@@ -38,7 +38,7 @@ module Xbar(
                 io_soc_axi_in_arready,
                 io_soc_axi_in_rvalid,
   input  [31:0] io_soc_axi_in_rdata,
-  input  [1:0]  io_soc_axi_in_rresp,
+  input         io_soc_axi_in_rlast,
   output [31:0] io_soc_axi_out_awaddr,
   output        io_soc_axi_out_awvalid,
   output [2:0]  io_soc_axi_out_awsize,
@@ -70,7 +70,7 @@ module Xbar(
   assign io_axi_in_arready = _GEN | io_soc_axi_in_arready;
   assign io_axi_in_rvalid = _GEN ? _clint_io_axi_in_rvalid : io_soc_axi_in_rvalid;
   assign io_axi_in_rdata = _GEN ? _clint_io_axi_in_rdata : io_soc_axi_in_rdata;
-  assign io_axi_in_rresp = _GEN ? 2'h0 : io_soc_axi_in_rresp;
+  assign io_axi_in_rlast = _GEN | io_soc_axi_in_rlast;
   assign io_soc_axi_out_awaddr = _GEN ? 32'h0 : io_axi_out_awaddr;
   assign io_soc_axi_out_awvalid = ~_GEN & io_axi_out_awvalid;
   assign io_soc_axi_out_awsize = _GEN ? 3'h0 : io_axi_out_awsize;
