@@ -1,0 +1,14 @@
+*.*
+*
+!*/
+!Makefile
+!*.mk
+!*.[cSh]
+!*.v
+!*.sv
+!*.cc
+!*.scala
+!*.cpp
+!.gitignore
+!README.md
+build/

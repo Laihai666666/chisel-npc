@@ -52,7 +52,7 @@ class IFU extends Module {
   val PSRAM_END   =  "h9fffffff".U
   val SDRAM_START = "ha0000000".U
   val SDRAM_END   = "hafffffff".U
-  val is_cacheable = ((io.pc >= FLASH_START && io.pc <= FLASH_END) 
+  val is_cacheable = ((io.pc >= FLASH_START && io.pc <= FLASH_END)    
                     || (io.pc >= PSRAM_START && io.pc <= PSRAM_END) 
                     || (io.pc >= SDRAM_START && io.pc <= SDRAM_END))
   // 状态机逻辑
@@ -101,9 +101,8 @@ class IFU extends Module {
         }
       }
     }
-    
   }
-  io.perf := io.ifu_ack
+  io.perf := io.out.valid 
   io.out.bits.inst := inst
   io.out.bits.pc := io.pc
 }
