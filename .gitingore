@@ -1,0 +1,8 @@
+.settings
+target/
+out/
+project/
+.vscode/
+.idea
+*.iml
+.metals/
